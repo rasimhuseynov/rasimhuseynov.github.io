@@ -1,14 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-R08C1GX6BJ"></script>
+ <!-- Discord Ziyarətçi İzləmə Sistemi -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-R08C1GX6BJ');
+  window.addEventListener('DOMContentLoaded', () => {
+    // BURADAKI DIRNAQLARIN İÇİNƏ ÖZ DISCORD WEBHOOK LİNKİNİ YAPIŞDIR
+    const webhookURL = "BURA_DISCORD_WEBHOOK_LINKINI_YAZ";
+
+    // İstifadəçinin cihaz məlumatlarını tapırıq
+    const deviceType = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Mobil Telefon" : "Kompüter (Masaüstü)";
+    const browser = navigator.userAgent;
+
+    // Pulsuz API vasitəsilə IP, Ölkə və Şəhər məlumatlarını götürürük
+    fetch('https://ipapi.co')
+      .then(res => res.json())
+      .then(data => {
+        // Discord-a gedəcək mesajın dizaynı
+        const discordMessage = {
+          username: "Ziyarətçi Radarı",
+          avatar_url: "https://imgur.com",
+          embeds: [{
+            title: "🚀 SƏNİN SAYTA BİRİ GİRDİ!",
+            color: 65280, // Yaşıl rəng
+            fields: [
+              { name: "🌐 IP Ünvanı", value: data.ip || "Tapılmadı", inline: true },
+              { name: "📍 Ölkə / Şəhər", value: `${data.country_name} / ${data.city}`, inline: true },
+              { name: "📱 Cihaz Növü", value: deviceType, inline: false },
+              { name: "🏢 İnternet Provayderi", value: data.org || "Tapılmadı", inline: false }
+            ],
+            footer: { text: "Rasim Huseynov Portfolio Tracking" },
+            timestamp: new Date()
+          }]
+        };
+
+        // Məlumatları Discord Webhook-a göndəririk
+        fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(discordMessage)
+        });
+      })
+      .catch(err => console.error("Xəta baş verdi:", err));
+  });
 </script>
+
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
