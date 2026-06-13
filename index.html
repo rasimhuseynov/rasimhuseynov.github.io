@@ -38,11 +38,12 @@
               { name: "📱 Cihaz Növü", value: deviceType, inline: false },
               { name: "⚠️ Qeyd", value: "Ziyarətçinin brauzeri reklam bloklayıcı istifadə edir.", inline: false }
             ],
-                 };
-          fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(basicMessage) });
-        });
-    });
-  </script>
+        };
+        fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(basicMessage) });
+      });
+  });
+</script>
+
 
 
   <meta charset="UTF-8" />
