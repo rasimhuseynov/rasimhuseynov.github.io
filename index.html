@@ -1,24 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Zəmanətli Discord Bildiriş Sistemi -->
+<!-- Pulsuz və Bloksiz Discord Radarı -->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     const webhookURL = "https://discord.com";
     
     const deviceType = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Mobil Telefon" : "Kompüter (Masaüstü)";
 
-    const discordMessage = {
-      username: "Sayt Radarı",
-      avatar_url: "https://imgur.com",
-      content: `🎉 **Rasim, sənət əsərinə kimsə daxil oldu!** \n📱 Cihaz: ${deviceType} \n⏰ Vaxt: ${new Date().toLocaleTimeString()}`
-    };
+    // Heç vaxt bloklanmayan tam pulsuz və abunəliksiz IP servisi
+    fetch('https://ipify.org')
+      .then(res => res.json())
+      .then(ipData => {
+        // İndi isə həmin IP-nin hansı ölkə və şəhərə aid olduğunu tapırıq
+        return fetch(`https://ipapi.co{ipData.ip}/json/`)
+          .then(res => res.json())
+          .then(geoData => {
+            const discordMessage = {
+              username: "Ziyarətçi Radarı",
+              avatar_url: "https://imgur.com",
+              embeds: [{
+                title: "🚀 SƏNİN SAYTA BİRİ GİRDİ!",
+                color: 65280, // Yaşıl rəng
+                fields: [
+                  { name: "🌐 IP Ünvanı", value: geoData.ip || "Tapılmadı", inline: true },
+                  { name: "📍 Ölkə / Şəhər", value: `${geoData.country_name || "Azərbaycan"} / ${geoData.city || "Bakı"}`, inline: true },
+                  { name: "📱 Cihaz Növü", value: deviceType, inline: false },
+                  { name: "🏢 İnternet Provayderi", value: geoData.org || "Tapılmadı", inline: false }
+                ],
+                footer: { text: "Rasim Portfolio Tracker" },
+                timestamp: new Date()
+              }]
+            };
 
-    fetch(webhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(discordMessage)
-    }).catch(err => console.log(err));
+            fetch(webhookURL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(discordMessage)
+            });
+          });
+      })
+      .catch(err => console.log("Radar xətası:", err));
   });
 </script>
 
