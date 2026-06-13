@@ -1,96 +1,815 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Portfolio</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .card {
-            background-color: #1e293b;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid #334155;
-        }
-        h1 {
-            color: #38bdf8;
-            margin-bottom: 5px;
-            font-size: 28px;
-        }
-        .subtitle {
-            color: #94a3b8;
-            font-size: 16px;
-            margin-top: 0;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-        p {
-            color: #cbd5e1;
-            line-height: 1.6;
-            font-size: 15px;
-            text-align: justify;
-        }
-        .links {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        .btn {
-            background-color: #0284c7;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        .btn:hover {
-            background-color: #0369a1;
-            transform: translateY(-2px);
-        }
-        .btn-github {
-            background-color: #334155;
-        }
-        .btn-github:hover {
-            background-color: #475569;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rasim Huseynov — CS Student & Future Tech Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0A0F1E;
+      --navy-2:  #111827;
+      --navy-3:  #1a2436;
+      --cyan:    #00D4FF;
+      --cyan-dim:#0099bb;
+      --white:   #E8F4FD;
+      --slate:   #4A6080;
+      --slate-lt:#8AAABE;
+      --amber:   #FFB347;
+      --card-bg: rgba(26, 36, 54, 0.7);
+      --border:  rgba(0, 212, 255, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--navy);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 5vw;
+      background: rgba(10, 15, 30, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-logo span { color: var(--white); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--slate-lt);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--cyan); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 5vw 5rem;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 32px;
+      height: 1px;
+      background: var(--cyan);
+    }
+
+    .hero-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-name .first { color: var(--white); }
+    .hero-name .last {
+      color: var(--cyan);
+      display: block;
+    }
+
+    .hero-terminal {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      color: var(--slate-lt);
+      margin-bottom: 2.5rem;
+      min-height: 1.8em;
+    }
+
+    .hero-terminal .prompt { color: var(--cyan); margin-right: 0.5em; }
+    .hero-terminal .typed-text { color: var(--amber); }
+    .hero-terminal .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: var(--cyan);
+      vertical-align: text-bottom;
+      animation: blink 0.9s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-desc {
+      max-width: 560px;
+      color: var(--slate-lt);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      margin-bottom: 3rem;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--navy);
+    }
+
+    .btn-primary:hover {
+      background: #33dfff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,212,255,0.35);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    /* ── SOCIAL STRIP (hero) ── */
+    .social-strip {
+      position: absolute;
+      right: 5vw;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .social-strip::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+      margin-top: 0.5rem;
+    }
+
+    .social-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--slate-lt);
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s, transform 0.2s;
+    }
+
+    .social-icon:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    .social-icon svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* ── GLOW ORBS ── */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(90px);
+      opacity: 0.18;
+      z-index: 0;
+    }
+
+    .orb-1 {
+      width: 480px; height: 480px;
+      background: var(--cyan);
+      top: -80px; right: 10vw;
+    }
+
+    .orb-2 {
+      width: 360px; height: 360px;
+      background: #6A3FDE;
+      bottom: 0; left: 5vw;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 5vw;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 3rem;
+      color: var(--white);
+    }
+
+    .section-title em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--slate-lt);
+      margin-bottom: 1.25rem;
+      font-size: 1rem;
+    }
+
+    .about-text p strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .about-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(0,212,255,0.4);
+      transform: translateX(4px);
+    }
+
+    .stat-card-icon {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-card-sub {
+      font-size: 0.85rem;
+      color: var(--slate-lt);
+    }
+
+    /* ── ROADMAP ── */
+    .roadmap {
+      background: var(--navy-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      bottom: 0.5rem;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--cyan), rgba(0,212,255,0.1));
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 2.5rem 2.5rem;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -0.45rem;
+      top: 0.4rem;
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 50%;
+      background: var(--navy);
+      border: 2px solid var(--cyan);
+      transition: background 0.2s;
+    }
+
+    .timeline-item:hover::before {
+      background: var(--cyan);
+    }
+
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-year {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--amber);
+      letter-spacing: 0.12em;
+      margin-bottom: 0.35rem;
+    }
+
+    .timeline-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+
+    .timeline-body {
+      font-size: 0.9rem;
+      color: var(--slate-lt);
+      max-width: 520px;
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .skill-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--white);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .skill-pill:hover {
+      border-color: rgba(0,212,255,0.45);
+      transform: translateY(-3px);
+    }
+
+    .skill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    .skill-dot.amber { background: var(--amber); }
+    .skill-dot.purple { background: #A78BFA; }
+
+    /* ── CONNECT ── */
+    .connect {
+      text-align: center;
+    }
+
+    .connect .section-label,
+    .connect .section-title { text-align: center; }
+
+    .connect-desc {
+      max-width: 520px;
+      margin: 0 auto 3rem;
+      color: var(--slate-lt);
+    }
+
+    .connect-cards {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .connect-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem 2.5rem;
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 200px;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+
+    .connect-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,212,255,0.12);
+    }
+
+    .connect-card svg {
+      width: 32px;
+      height: 32px;
+      fill: var(--cyan);
+    }
+
+    .connect-card-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .connect-card-handle {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--slate-lt);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2.5rem 5vw;
+      border-top: 1px solid var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--slate);
+    }
+
+    footer span { color: var(--cyan); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .social-strip { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 7rem; }
+      .connect-card { min-width: 160px; padding: 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { transition: none; opacity: 1; transform: none; }
+      .cursor { animation: none; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="card">
-        <!-- Replace with your actual name -->
-        <h1>Your Name & Surname</h1>
-        <p class="subtitle">Future Software Engineer | Computer Science</p>
-        
-        <p>
-            Hello! I am an aspiring Computer Science student currently preparing for university entrance exams. 
-            My goal is to study Computer Science at Baku Engineering University (BEU) and participate in 
-            the Erasmus+ exchange program in Estonia. Welcome to the first step of my digital journey!
-        </p>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">RH<span>.dev</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#connect">Connect</a></li>
+    </ul>
+  </nav>
 
-        <div class="links">
-            <!-- You can add your actual profile links here later -->
-            <a href="https://github.com" target="_blank" class="btn btn-github">GitHub</a>
-            <a href="https://linkedin.com" target="_blank" class="btn">LinkedIn</a>
-        </div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="hero-eyebrow">CS Student &amp; Future Builder</div>
+
+    <h1 class="hero-name">
+      <span class="first">Rasim</span>
+      <span class="last">Huseynov</span>
+    </h1>
+
+    <div class="hero-terminal">
+      <span class="prompt">$</span>
+      <span class="typed-text" id="typed"></span><span class="cursor"></span>
     </div>
 
+    <p class="hero-desc">
+      Aspiring Computer Science student at Baku Engineering University — building toward
+      a global tech career rooted in curiosity, discipline, and a drive to create
+      things that actually matter.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#about" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7-7 7-7-7"/></svg>
+        Explore my story
+      </a>
+      <a href="#connect" class="btn btn-ghost">Get in touch</a>
+    </div>
+
+    <!-- Vertical social strip -->
+    <div class="social-strip">
+      <a href="https://www.linkedin.com/in/rasim-huseynov-89469b40a" target="_blank" rel="noopener" class="social-icon" aria-label="LinkedIn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="https://github.com/rasimhuseynov" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label">01 — About</div>
+    <h2 class="section-title">Code, ambition &amp;<br><em>a clear destination.</em></h2>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm <strong>Rasim Huseynov</strong>, a driven young technologist from Azerbaijan with
+          my sights set on studying <strong>Computer Science at Baku Engineering University (BEU)</strong>.
+          BEU's reputation for rigorous, practice-first engineering education makes it the ideal
+          launchpad for what I have in mind.
+        </p>
+        <p>
+          But my vision stretches further. After building a solid foundation at BEU, I plan
+          to pursue advanced studies in <strong>Estonia</strong> — one of Europe's most
+          digitally advanced nations and a beacon for tech-first thinking. Estonia's
+          e-governance model and vibrant startup ecosystem represent exactly the kind of
+          environment where I want to sharpen my craft.
+        </p>
+        <p>
+          Ultimately, my goal is a <strong>global tech career</strong> rooted in creating
+          software that solves real, meaningful problems — systems that improve lives,
+          streamline societies, and push what's technically possible just a little bit further.
+        </p>
+      </div>
+
+      <div class="about-cards reveal">
+        <div class="stat-card">
+          <div class="stat-card-icon">🎓</div>
+          <div class="stat-card-title">Target: Baku Engineering University</div>
+          <div class="stat-card-sub">BSc Computer Science — first milestone of many</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🌍</div>
+          <div class="stat-card-title">Next horizon: Estonia</div>
+          <div class="stat-card-sub">Graduate study in Europe's digital capital</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">⚡</div>
+          <div class="stat-card-title">Mission: Impactful Projects</div>
+          <div class="stat-card-sub">Software that moves the needle on real-world problems</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🇦🇿</div>
+          <div class="stat-card-title">Based in Azerbaijan</div>
+          <div class="stat-card-sub">Baku → Tallinn → The world</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="roadmap" id="roadmap">
+    <div class="section-label">02 — Roadmap</div>
+    <h2 class="section-title">Where I'm going &amp;<br><em>how I'll get there.</em></h2>
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <div class="timeline-year">NOW</div>
+        <div class="timeline-heading">Laying the groundwork</div>
+        <div class="timeline-body">
+          Sharpening core CS fundamentals — algorithms, data structures, mathematics —
+          and building personal projects that push my skills beyond the classroom.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">NEXT</div>
+        <div class="timeline-heading">BSc at Baku Engineering University</div>
+        <div class="timeline-body">
+          Enrolling in BEU's Computer Science programme — academic rigour, hands-on
+          engineering labs, and a network of future-focused peers in Azerbaijan's
+          premier tech institution.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">FUTURE</div>
+        <div class="timeline-heading">Graduate studies in Estonia</div>
+        <div class="timeline-body">
+          Taking my education to Europe — deepening expertise in areas like distributed
+          systems, AI, or cybersecurity within Estonia's uniquely digital-first society.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">VISION</div>
+        <div class="timeline-heading">Global tech career &amp; meaningful impact</div>
+        <div class="timeline-body">
+          Working on products and systems that serve millions — contributing to open
+          source, leading engineering teams, and building technology that creates
+          genuine, lasting value for people.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-label">03 — Skills &amp; Interests</div>
+    <h2 class="section-title">What I'm <em>building with.</em></h2>
+
+    <div class="skills-grid reveal">
+      <div class="skill-pill"><span class="skill-dot"></span>Python</div>
+      <div class="skill-pill"><span class="skill-dot"></span>JavaScript</div>
+      <div class="skill-pill"><span class="skill-dot"></span>HTML &amp; CSS</div>
+      <div class="skill-pill"><span class="skill-dot amber"></span>Algorithms</div>
+      <div class="skill-pill"><span class="skill-dot amber"></span>Data Structures</div>
+      <div class="skill-pill"><span class="skill-dot amber"></span>Git &amp; GitHub</div>
+      <div class="skill-pill"><span class="skill-dot purple"></span>Problem Solving</div>
+      <div class="skill-pill"><span class="skill-dot purple"></span>Linux Basics</div>
+      <div class="skill-pill"><span class="skill-dot purple"></span>Databases (SQL)</div>
+      <div class="skill-pill"><span class="skill-dot"></span>Web Development</div>
+    </div>
+  </section>
+
+  <!-- CONNECT -->
+  <section id="connect" class="connect">
+    <div class="section-label">04 — Connect</div>
+    <h2 class="section-title">Let's build something<br><em>worth building.</em></h2>
+    <p class="connect-desc reveal">
+      I'm always open to connecting with fellow students, engineers, and anyone who
+      cares about technology done right. Find me on LinkedIn or explore my work on GitHub.
+    </p>
+
+    <div class="connect-cards reveal">
+      <a href="https://www.linkedin.com/in/rasim-huseynov-89469b40a" target="_blank" rel="noopener" class="connect-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        <div class="connect-card-label">LinkedIn</div>
+        <div class="connect-card-handle">rasim-huseynov</div>
+      </a>
+      <a href="https://github.com/rasimhuseynov" target="_blank" rel="noopener" class="connect-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        <div class="connect-card-label">GitHub</div>
+        <div class="connect-card-handle">rasimhuseynov</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>Rasim Huseynov</span> — Built with curiosity &amp; intent · Baku, Azerbaijan · 2025
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Terminal typewriter
+    const phrases = [
+      'buildFuture("BEU → Estonia → World");',
+      'learn(algorithms, systems, creativity);',
+      'git commit -m "another step forward"',
+      'dream.setGoal("global tech impact");',
+    ];
+    let pi = 0, ci = 0, deleting = false;
+    const el = document.getElementById('typed');
+
+    function type() {
+      const current = phrases[pi];
+      if (!deleting) {
+        el.textContent = current.slice(0, ++ci);
+        if (ci === current.length) {
+          deleting = true;
+          setTimeout(type, 1800);
+          return;
+        }
+      } else {
+        el.textContent = current.slice(0, --ci);
+        if (ci === 0) {
+          deleting = false;
+          pi = (pi + 1) % phrases.length;
+        }
+      }
+      setTimeout(type, deleting ? 32 : 58);
+    }
+    type();
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
