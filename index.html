@@ -1,50 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Discord İzləmə Sistemi -->
+<!-- Zəmanətli Discord Bildiriş Sistemi -->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     const webhookURL = "https://discord.com";
+    
     const deviceType = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Mobil Telefon" : "Kompüter (Masaüstü)";
 
-    fetch('https://ipapi.co')
-      .then(res => res.json())
-      .then(data => {
-        const discordMessage = {
-          username: "Ziyarətçi Radarı",
-          avatar_url: "https://imgur.com",
-          embeds: [{
-            title: "🚀 SƏNİN SAYTA BİRİ GİRDİ!",
-            color: 65280,
-            fields: [
-              { name: "🌐 IP Ünvanı", value: data.ip || "Tapılmadı", inline: true },
-              { name: "📍 Ölkə / Şəhər", value: `${data.country_name || "Tapılmadı"} / ${data.city || "Tapılmadı"}`, inline: true },
-              { name: "📱 Cihaz Növü", value: deviceType, inline: false },
-              { name: "🏢 İnternet Provayderi", value: data.org || "Tapılmadı", inline: false }
-            ],
-            footer: { text: "Rasim Huseynov Portfolio Tracking" },
-            timestamp: new Date()
-          }]
-        };
-        fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(discordMessage) });
-      })
-      .catch(err => {
-        const basicMessage = {
-          username: "Ziyarətçi Radarı",
-          embeds: [{
-            title: "🚀 SƏNİN SAYTA BİRİ GİRDİ (IP Gizlədildi)!",
-            color: 16711680,
-            fields: [
-              { name: "📱 Cihaz Növü", value: deviceType, inline: false },
-              { name: "⚠️ Qeyd", value: "Ziyarətçinin brauzeri reklam bloklayıcı istifadə edir.", inline: false }
-            ],
-        };
-        fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(basicMessage) });
-      });
+    const discordMessage = {
+      username: "Sayt Radarı",
+      avatar_url: "https://imgur.com",
+      content: `🎉 **Rasim, sənət əsərinə kimsə daxil oldu!** \n📱 Cihaz: ${deviceType} \n⏰ Vaxt: ${new Date().toLocaleTimeString()}`
+    };
+
+    fetch(webhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(discordMessage)
+    }).catch(err => console.log(err));
   });
 </script>
-
-
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
