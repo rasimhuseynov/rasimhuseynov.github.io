@@ -1,30 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <!-- Discord Ziyarətçi İzləmə Sistemi -->
+<!-- Discord İzləmə Sistemi -->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
-    // BURADAKI DIRNAQLARIN İÇİNƏ ÖZ DISCORD WEBHOOK LİNKİNİ YAPIŞDIR
-    const webhookURL = "https://discord.com/api/webhooks/1515408550552146072/3sYCZRLyFwfINPuV5TXAkmlcU5-YVq-JEm2yOhQz3guKaE66WbPU6BleTEVemtrqtI-6";
-
-    // İstifadəçinin cihaz məlumatlarını tapırıq
+    const webhookURL = "https://discord.com";
     const deviceType = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Mobil Telefon" : "Kompüter (Masaüstü)";
-    const browser = navigator.userAgent;
 
-    // Pulsuz API vasitəsilə IP, Ölkə və Şəhər məlumatlarını götürürük
     fetch('https://ipapi.co')
       .then(res => res.json())
       .then(data => {
-        // Discord-a gedəcək mesajın dizaynı
         const discordMessage = {
           username: "Ziyarətçi Radarı",
           avatar_url: "https://imgur.com",
           embeds: [{
             title: "🚀 SƏNİN SAYTA BİRİ GİRDİ!",
-            color: 65280, // Yaşıl rəng
+            color: 65280,
             fields: [
               { name: "🌐 IP Ünvanı", value: data.ip || "Tapılmadı", inline: true },
-              { name: "📍 Ölkə / Şəhər", value: `${data.country_name} / ${data.city}`, inline: true },
+              { name: "📍 Ölkə / Şəhər", value: `${data.country_name || "Tapılmadı"} / ${data.city || "Tapılmadı"}`, inline: true },
               { name: "📱 Cihaz Növü", value: deviceType, inline: false },
               { name: "🏢 İnternet Provayderi", value: data.org || "Tapılmadı", inline: false }
             ],
@@ -32,17 +26,23 @@
             timestamp: new Date()
           }]
         };
-
-        // Məlumatları Discord Webhook-a göndəririk
-        fetch(webhookURL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(discordMessage)
-        });
+        fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(discordMessage) });
       })
-      .catch(err => console.error("Xəta baş verdi:", err));
-  });
-</script>
+      .catch(err => {
+        const basicMessage = {
+          username: "Ziyarətçi Radarı",
+          embeds: [{
+            title: "🚀 SƏNİN SAYTA BİRİ GİRDİ (IP Gizlədildi)!",
+            color: 16711680,
+            fields: [
+              { name: "📱 Cihaz Növü", value: deviceType, inline: false },
+              { name: "⚠️ Qeyd", value: "Ziyarətçinin brauzeri reklam bloklayıcı istifadə edir.", inline: false }
+            ],
+                 };
+          fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(basicMessage) });
+        });
+    });
+  </script>
 
 
   <meta charset="UTF-8" />
