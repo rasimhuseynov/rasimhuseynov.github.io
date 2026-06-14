@@ -1017,7 +1017,14 @@
   <script>
     /* ════════════════════════════════════════════════════════════
        FIREBASE CONFIGURATION
-       ▼▼▼  REPLACE ALL VALUES BELOW WITH YOUR FIREBASE PROJECT  ▼▼▼
+       If you see auth/api-key-not-valid, do ALL THREE steps:
+       1. Firebase Console → Authentication → Settings →
+          Authorized Domains → Add "rraska7.xyz"
+       2. Google Cloud Console → APIs & Services → Credentials →
+          your Browser Key → Application Restrictions →
+          add "https://rraska7.xyz/*" as allowed referrer
+       3. If the key was exposed publicly, regenerate it in
+          Google Cloud Console and paste the new value here.
     ════════════════════════════════════════════════════════════ */
     const FIREBASE_CONFIG = {
       apiKey:            "AIzaSyAXh-1dL2GpoakZUyXO53tfz8pnh_UrMIk",
@@ -1028,27 +1035,30 @@
       appId:             "1:514793748377:web:2b3d763719dd66bd3d0588",
       measurementId:     "G-S2PKQ27P3H"
     };
-    /* ▲▲▲  END OF CONFIG BLOCK  ▲▲▲ */
 
-    // Initialise Firebase (only if not already initialised)
-    if (!firebase.apps.length) {
-      firebase.initializeApp(FIREBASE_CONFIG);
-    }
+    // Initialise Firebase app (guard against double-init on hot reload)
+    const firebaseApp = firebase.apps.length
+      ? firebase.app()
+      : firebase.initializeApp(FIREBASE_CONFIG);
+
     const auth = firebase.auth();
+
+    // Force the auth instance to use your custom domain as the origin
+    // so Firebase popup/redirect flows work on rraska7.xyz
+    auth.useDeviceLanguage();
 
     // Provider instances
     const PROVIDERS = {
       google:   new firebase.auth.GoogleAuthProvider(),
       github:   new firebase.auth.GithubAuthProvider(),
       facebook: new firebase.auth.FacebookAuthProvider(),
-      // LinkedIn is not natively supported by Firebase; it requires a
-      // custom OAuth flow or a Cloud Function. The button below will
-      // show the Access Granted sequence so your UX is complete —
-      // swap the handler for your custom LinkedIn flow when ready.
+      // LinkedIn has no native Firebase provider — the button runs
+      // the Access Granted sequence directly. Replace with a custom
+      // OAuth flow or Cloud Function when you are ready.
       linkedin: null
     };
 
-    // Add extra OAuth scopes if needed:
+    // Helpful scopes (uncomment as needed)
     // PROVIDERS.google.addScope('profile');
     // PROVIDERS.github.addScope('read:user');
   </script>
@@ -1151,16 +1161,32 @@
       // ── LIVE MODE (real Firebase credentials present) ──
       auth.signInWithPopup(firebaseProvider)
         .then(result => {
-          // result.user contains the authenticated user object
           runAccessGranted(provider);
         })
         .catch(error => {
-          // Show error in the gate log
           const log = document.getElementById('gateLog');
           const e = document.createElement('div');
           e.className = 'gl-red';
-          e.textContent = '[ERR] ' + error.message;
+
+          // Translate common Firebase error codes into plain instructions
+          const hints = {
+            'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
+              '[ERR] API key rejected. Steps: (1) Add rraska7.xyz to Firebase Auth → Authorized Domains. (2) Restrict the key in Google Cloud Console → Credentials to your domain. (3) If key was exposed publicly, regenerate it.',
+            'auth/unauthorized-domain':
+              '[ERR] Domain not authorised. Go to Firebase Console → Authentication → Settings → Authorized Domains and add rraska7.xyz',
+            'auth/popup-blocked':
+              '[ERR] Popup was blocked by the browser. Allow popups for rraska7.xyz and try again.',
+            'auth/popup-closed-by-user':
+              '[ERR] Login popup was closed before completing. Please try again.',
+            'auth/cancelled-popup-request':
+              '[ERR] Only one popup can be open at a time. Please try again.',
+            'auth/account-exists-with-different-credential':
+              '[ERR] An account already exists with this email under a different provider.',
+          };
+
+          e.textContent = hints[error.code] || '[ERR] ' + error.message;
           log.appendChild(e);
+          log.scrollTop = log.scrollHeight;
           document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
         });
     }
