@@ -329,7 +329,6 @@
     .nav-links a#openAuthBtn:hover { border-color: var(--cyan); }
 
     .nav-links a#logoutBtn {
-      display: none;
       color: var(--slate-lt);
       border: 1px solid transparent;
     }
@@ -1077,12 +1076,16 @@
          no modal), then again whenever auth state changes —
          including changes made in other tabs.
       ────────────────────────────────────────────────────────── */
+      // Default state while Firebase determines whether a session exists
+      openBtn.style.display   = 'inline-block';
+      logoutBtn.style.display = 'none';
+
       auth.onAuthStateChanged(user => {
         if (user) {
           openBtn.style.display   = 'none';
-          logoutBtn.style.display = '';
+          logoutBtn.style.display = 'inline-block';
         } else {
-          openBtn.style.display   = '';
+          openBtn.style.display   = 'inline-block';
           logoutBtn.style.display = 'none';
         }
       });
