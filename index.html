@@ -1026,22 +1026,23 @@
        3. If the key was exposed publicly, regenerate it in
           Google Cloud Console and paste the new value here.
     ════════════════════════════════════════════════════════════ */
-    const FIREBASE_CONFIG = {
-      apiKey:            "AIzaSyAXh-1dL2GpoakZUyXO53tfz8pnh_UrMIk",
-      authDomain:        "rasim-auth-27fe8.firebaseapp.com",
-      projectId:         "rasim-auth-27fe8",
-      storageBucket:     "rasim-auth-27fe8.firebasestorage.app",
-      messagingSenderId: "514793748377",
-      appId:             "1:514793748377:web:2b3d763719dd66bd3d0588",
-      measurementId:     "G-S2PKQ27P3H"
-    };
+  const firebaseConfig = {
+  apiKey: "AIzaSyAXh-IdL2GpoaKZUyXO53tfz8phh_UrMIk",
+  authDomain: "rasim-auth-27fe8.firebaseapp.com",
+  projectId: "rasim-auth-27fe8",
+  storageBucket: "rasim-auth-27fe8.firebasestorage.app",
+  messagingSenderId: "514793748377",
+  appId: "1:514793748377:web:2b3d7637190d66bd8d0508",
+  measurementId: "G-S2PKQ27P3H"
+};
 
     // Initialise Firebase app (guard against double-init on hot reload)
     const firebaseApp = firebase.apps.length
       ? firebase.app()
-      : firebase.initializeApp(FIREBASE_CONFIG);
+      : firebase.initializeApp(firebaseConfig);
 
     const auth = firebase.auth();
+
 
     // Force the auth instance to use your custom domain as the origin
     // so Firebase popup/redirect flows work on rraska7.xyz
