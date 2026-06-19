@@ -2,12 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rasim Huseynov — CS Student & Future Tech Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>RasimOS Arcade — Snake</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    /* ════════════════════════════════════════════════════════════
+       RESET & ROOT TOKENS
+       Same palette as the main portfolio so the game feels native
+       to the site rather than bolted on.
+    ════════════════════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -20,22 +25,33 @@
       --slate:   #4A6080;
       --slate-lt:#8AAABE;
       --amber:   #FFB347;
+      --red:     #FF5F57;
+      --green:   #4ade80;
+      --purple:  #A78BFA;
       --card-bg: rgba(26, 36, 54, 0.7);
       --border:  rgba(0, 212, 255, 0.15);
+
+      /* Game-specific sizing — tweak --cell to resize the whole board */
+      --cell: 24px;
+      --cols: 21;
+      --rows: 21;
     }
 
-    html { scroll-behavior: smooth; }
-
-    body {
+    html, body {
+      height: 100%;
       background-color: var(--navy);
       color: var(--white);
       font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      line-height: 1.7;
       overflow-x: hidden;
     }
 
-    /* ── GRID NOISE TEXTURE ── */
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Faint grid texture, identical treatment to the main site */
     body::before {
       content: '';
       position: fixed;
@@ -48,249 +64,14 @@
       z-index: 0;
     }
 
-    /* ════════════════════════════════════════
-       AUTH MODAL (hidden by default — no page lock)
-    ════════════════════════════════════════ */
-    #login-gate {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      background: rgba(10, 15, 30, 0.78);
-      backdrop-filter: blur(6px);
-    }
+    .orb { position: fixed; border-radius: 50%; pointer-events: none; filter: blur(100px); opacity: 0.16; z-index: 0; }
+    .orb-1 { width: 480px; height: 480px; background: var(--cyan); top: -120px; right: 8vw; }
+    .orb-2 { width: 360px; height: 360px; background: #6A3FDE; bottom: -80px; left: 4vw; }
 
-    #login-gate.open {
-      display: flex;
-    }
-
-    /* Glow orbs behind the login card */
-    .gate-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.15;
-      pointer-events: none;
-    }
-    .gate-orb-1 { width: 500px; height: 500px; background: var(--cyan);   top: -100px; right: -80px; }
-    .gate-orb-2 { width: 400px; height: 400px; background: #7C3AED; bottom: -80px; left: -60px; }
-
-    .gate-card {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 0 60px rgba(0,212,255,0.08), 0 24px 48px rgba(0,0,0,0.4);
-    }
-
-    /* ── Terminal header bar ── */
-    .gate-term-bar {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem 1.25rem;
-      background: rgba(10,15,30,0.95);
-      border-bottom: 1px solid var(--border);
-      user-select: none;
-      position: relative;
-    }
-
-    .gate-dots { display: flex; gap: 0.45rem; }
-    .gate-dots span { display: block; width: 12px; height: 12px; border-radius: 50%; }
-    .dot-r { background: #FF5F57; }
-    .dot-y { background: #FEBC2E; }
-    .dot-g { background: #28C840; }
-
-    .gate-term-title {
-      position: absolute;
-      left: 50%; transform: translateX(-50%);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--slate-lt);
-      white-space: nowrap;
-    }
-
-    .gate-close {
-      position: absolute;
-      right: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      background: transparent;
-      border: none;
-      color: var(--slate-lt);
-      font-size: 1.3rem;
-      line-height: 1;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
-    }
-    .gate-close:hover { color: var(--cyan); background: rgba(0,212,255,0.08); }
-
-    /* ── Terminal-style message ── */
-    .gate-log {
-      padding: 1.25rem 1.5rem 0.75rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
-      line-height: 1.7;
-      color: var(--slate-lt);
-    }
-
-    .gate-log .gl-cyan   { color: var(--cyan); }
-    .gate-log .gl-amber  { color: var(--amber); }
-    .gate-log .gl-green  { color: #4ade80; }
-    .gate-log .gl-red    { color: #f87171; }
-
-    /* ── Divider ── */
-    .gate-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0 1.5rem;
-      margin: 0.25rem 0 1rem;
-    }
-    .gate-divider::before,
-    .gate-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .gate-divider span {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--slate);
-      letter-spacing: 0.12em;
-      white-space: nowrap;
-    }
-
-    /* ── Auth button ── */
-    .gate-socials {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding: 0 1.5rem 1.5rem;
-    }
-
-    .gate-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      padding: 0.8rem 1.25rem;
-      border-radius: 10px;
-      border: 1px solid;
-      background: transparent;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
-      text-align: left;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .gate-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: currentColor;
-      opacity: 0;
-      transition: opacity 0.18s;
-    }
-    .gate-btn:hover::before { opacity: 0.06; }
-    .gate-btn:hover { transform: translateY(-2px); }
-    .gate-btn:active { transform: translateY(0); }
-    .gate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .gate-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
-
-    .gate-btn-label { flex: 1; }
-    .gate-btn-tag {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      opacity: 0.6;
-    }
-
-    /* Google */
-    .gate-btn-google {
-      border-color: rgba(234,67,53,0.4);
-      color: #EA4335;
-      box-shadow: inset 0 0 0 1px rgba(234,67,53,0.1);
-    }
-    .gate-btn-google:hover { box-shadow: 0 0 18px rgba(234,67,53,0.25), inset 0 0 0 1px rgba(234,67,53,0.3); }
-
-    /* ── Access Granted overlay ── */
-    #access-granted {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(10,15,30,0.97);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.8rem;
-      padding: 2rem;
-    }
-    #access-granted.show { display: flex; }
-
-    .ag-lines { width: 100%; }
-    .ag-line  {
-      opacity: 0;
-      transform: translateX(-8px);
-      transition: opacity 0.3s, transform 0.3s;
-      margin-bottom: 0.3rem;
-    }
-    .ag-line.vis  { opacity: 1; transform: none; }
-    .ag-line.cyan  { color: var(--cyan); }
-    .ag-line.green { color: #4ade80; }
-    .ag-line.amber { color: var(--amber); }
-
-    .ag-bar-wrap {
-      margin: 1rem 0;
-      width: 100%;
-      height: 4px;
-      background: rgba(0,212,255,0.1);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .ag-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--cyan), #7C3AED);
-      border-radius: 4px;
-      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-    }
-
-    /* ── Gate footer note ── */
-    .gate-note {
-      padding: 0.75rem 1.5rem 1rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--slate);
-      text-align: center;
-      border-top: 1px solid var(--border);
-    }
-
-    /* ════════════════════════════════════════
-       NAV
-    ════════════════════════════════════════ */
+    /* ── NAV (lightweight, mirrors the portfolio header) ── */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
+      position: relative;
+      z-index: 2;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -299,1031 +80,952 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-
     .nav-logo {
       font-family: 'Space Mono', monospace;
       font-size: 1rem;
       color: var(--cyan);
       letter-spacing: 0.02em;
+      text-decoration: none;
     }
     .nav-logo span { color: var(--white); }
-
-    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
-    .nav-links a {
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       color: var(--slate-lt);
       text-decoration: none;
       font-size: 0.85rem;
       font-weight: 500;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
       transition: color 0.2s, border-color 0.2s;
     }
-    .nav-links a:hover { color: var(--cyan); }
+    .nav-back:hover { color: var(--cyan); border-color: var(--cyan); }
 
-    .nav-links a#openAuthBtn {
-      color: var(--cyan);
-      border: 1px solid var(--border);
-      padding: 0.4rem 0.95rem;
-      border-radius: 6px;
-    }
-    .nav-links a#openAuthBtn:hover { border-color: var(--cyan); }
-
-    .nav-links a#logoutBtn {
-      color: var(--slate-lt);
-      border: 1px solid transparent;
-    }
-    .nav-links a#logoutBtn:hover { color: var(--amber); }
-
-    /* ── HERO ── */
-    .hero {
+    /* ── MAIN LAYOUT ── */
+    main {
       position: relative;
-      min-height: 100vh;
+      z-index: 1;
+      flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      padding: 8rem 5vw 5rem;
-      z-index: 1;
+      align-items: center;
+      padding: 2.5rem 5vw 4rem;
     }
 
-    .hero-eyebrow {
+    .game-eyebrow {
       font-family: 'Space Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--cyan);
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
-    .hero-eyebrow::before {
+    .game-eyebrow::before {
       content: '';
       display: inline-block;
-      width: 32px; height: 1px;
+      width: 28px; height: 1px;
       background: var(--cyan);
     }
 
-    .hero-name {
+    .game-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(3rem, 9vw, 7.5rem);
+      font-size: clamp(2rem, 5vw, 3.2rem);
       font-weight: 700;
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+      text-align: center;
     }
-    .hero-name .first { color: var(--white); }
-    .hero-name .last  { color: var(--cyan); display: block; }
+    .game-title em { font-style: normal; color: var(--cyan); }
 
-    .hero-terminal {
+    .game-sub {
       font-family: 'Space Mono', monospace;
-      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      font-size: 0.85rem;
       color: var(--slate-lt);
-      margin-bottom: 2.5rem;
-      min-height: 1.8em;
-    }
-    .hero-terminal .prompt { color: var(--cyan); margin-right: 0.5em; }
-    .hero-terminal .typed-text { color: var(--amber); }
-    .hero-terminal .cursor {
-      display: inline-block;
-      width: 2px; height: 1.1em;
-      background: var(--cyan);
-      vertical-align: text-bottom;
-      animation: blink 0.9s step-end infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-
-    .hero-desc {
-      max-width: 560px;
-      color: var(--slate-lt);
-      font-size: 1.05rem;
-      line-height: 1.75;
-      margin-bottom: 3rem;
+      text-align: center;
+      max-width: 480px;
+      margin-bottom: 2.25rem;
+      line-height: 1.6;
     }
 
-    .hero-cta { display: flex; flex-wrap: wrap; gap: 1rem; }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.75rem 1.6rem;
-      border-radius: 6px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-decoration: none;
-      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
-      cursor: pointer;
-    }
-    .btn-primary { background: var(--cyan); color: var(--navy); }
-    .btn-primary:hover { background: #33dfff; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,212,255,0.35); }
-    .btn-ghost { background: transparent; color: var(--white); border: 1px solid var(--border); }
-    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
-
-    /* ── SOCIAL STRIP (hero) ── */
-    .social-strip {
-      position: absolute;
-      right: 5vw; top: 50%;
-      transform: translateY(-50%);
+    /* ── SCORE BAR ── */
+    .scorebar {
       display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      align-items: center;
-    }
-    .social-strip::after {
-      content: '';
-      display: block;
-      width: 1px; height: 80px;
-      background: linear-gradient(to bottom, var(--border), transparent);
-      margin-top: 0.5rem;
-    }
-    .social-icon {
-      display: flex; align-items: center; justify-content: center;
-      width: 40px; height: 40px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      color: var(--slate-lt);
-      text-decoration: none;
-      transition: color 0.2s, border-color 0.2s, transform 0.2s;
-    }
-    .social-icon:hover { color: var(--cyan); border-color: var(--cyan); transform: translateY(-3px); }
-    .social-icon svg { width: 18px; height: 18px; fill: currentColor; }
-
-    /* ── GLOW ORBS ── */
-    .orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(90px); opacity: 0.18; z-index: 0; }
-    .orb-1 { width: 480px; height: 480px; background: var(--cyan); top: -80px; right: 10vw; }
-    .orb-2 { width: 360px; height: 360px; background: #6A3FDE; bottom: 0; left: 5vw; }
-
-    /* ── SECTIONS ── */
-    section {
-      position: relative;
-      z-index: 1;
-      padding: 6rem 5vw;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      max-width: calc(var(--cell) * var(--cols) + 2px);
     }
 
-    .section-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--cyan);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }
-
-    .section-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 700;
-      line-height: 1.15;
-      margin-bottom: 3rem;
-      color: var(--white);
-    }
-    .section-title em { font-style: normal; color: var(--cyan); }
-
-    /* ── ABOUT ── */
-    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-    .about-text p { color: var(--slate-lt); margin-bottom: 1.25rem; font-size: 1rem; }
-    .about-text p strong { color: var(--white); font-weight: 600; }
-    .about-cards { display: flex; flex-direction: column; gap: 1rem; }
-
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      backdrop-filter: blur(10px);
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .stat-card:hover { border-color: rgba(0,212,255,0.4); transform: translateX(4px); }
-    .stat-card-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
-    .stat-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
-    .stat-card-sub { font-size: 0.85rem; color: var(--slate-lt); }
-
-    /* ── ROADMAP ── */
-    .roadmap { background: var(--navy-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-
-    .timeline { position: relative; padding-left: 2rem; }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0.5rem; bottom: 0.5rem;
-      width: 1px;
-      background: linear-gradient(to bottom, var(--cyan), rgba(0,212,255,0.1));
-    }
-    .timeline-item { position: relative; padding: 0 0 2.5rem 2.5rem; }
-    .timeline-item::before {
-      content: '';
-      position: absolute;
-      left: -0.45rem; top: 0.4rem;
-      width: 0.85rem; height: 0.85rem;
-      border-radius: 50%;
-      background: var(--navy);
-      border: 2px solid var(--cyan);
-      transition: background 0.2s;
-    }
-    .timeline-item:hover::before { background: var(--cyan); }
-    .timeline-item:last-child { padding-bottom: 0; }
-    .timeline-year { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--amber); letter-spacing: 0.12em; margin-bottom: 0.35rem; }
-    .timeline-heading { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
-    .timeline-body { font-size: 0.9rem; color: var(--slate-lt); max-width: 520px; }
-
-    /* ── SKILLS ── */
-    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-    .skill-pill {
+    .score-card {
+      flex: 1;
+      min-width: 110px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1.1rem 1.25rem;
-      backdrop-filter: blur(8px);
-      display: flex; align-items: center; gap: 0.75rem;
-      font-size: 0.9rem; font-weight: 500; color: var(--white);
-      transition: border-color 0.2s, transform 0.2s;
+      padding: 0.75rem 1rem;
+      backdrop-filter: blur(10px);
+      text-align: center;
     }
-    .skill-pill:hover { border-color: rgba(0,212,255,0.45); transform: translateY(-3px); }
-    .skill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
-    .skill-dot.amber  { background: var(--amber); }
-    .skill-dot.purple { background: #A78BFA; }
+    .score-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--slate-lt);
+      margin-bottom: 0.25rem;
+    }
+    .score-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--cyan);
+      font-variant-numeric: tabular-nums;
+    }
+    .score-value.amber { color: var(--amber); }
 
-    /* ── CONNECT ── */
-    .connect { text-align: center; }
-    .connect .section-label, .connect .section-title { text-align: center; }
-    .connect-desc { max-width: 520px; margin: 0 auto 3rem; color: var(--slate-lt); }
-    .connect-cards { display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; }
-    .connect-card {
+    /* ── GAME FRAME (terminal-style chrome, matches the site) ── */
+    .game-frame {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 2rem 2.5rem;
-      backdrop-filter: blur(10px);
-      text-decoration: none;
-      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
-      min-width: 200px;
-      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 50px rgba(0, 212, 255, 0.08), 0 24px 48px rgba(0,0,0,0.35);
     }
-    .connect-card:hover { border-color: var(--cyan); transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,212,255,0.12); }
-    .connect-card svg { width: 32px; height: 32px; fill: var(--cyan); }
-    .connect-card-label { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--white); }
-    .connect-card-handle { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--slate-lt); }
 
-    /* ── TERMINAL SIMULATOR ── */
-    #terminal-section { padding: 6rem 5vw; position: relative; z-index: 1; }
+    .game-frame-bar {
+      display: flex;
+      align-items: center;
+      padding: 0.7rem 1.1rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      user-select: none;
+    }
+    .frame-dots { display: flex; gap: 0.4rem; }
+    .frame-dots span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+    .fd-red { background: var(--red); }
+    .fd-yellow { background: #FEBC2E; }
+    .fd-green { background: var(--green); }
+    .frame-title {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--slate-lt);
+    }
 
-    .terminal-wrap {
-      max-width: 860px; margin: 0 auto;
+    /* ── BOARD ── */
+    .board-wrap {
+      position: relative;
+      padding: 14px;
+      touch-action: none; /* prevents page scroll while swiping on the board */
+    }
+
+    #board {
+      display: block;
+      background: var(--navy);
+      border-radius: 4px;
+      width: calc(var(--cell) * var(--cols));
+      height: calc(var(--cell) * var(--rows));
+      image-rendering: pixelated;
+    }
+
+    /* Overlay used for start / pause / game-over states */
+    .board-overlay {
+      position: absolute;
+      inset: 14px;
+      background: rgba(10, 15, 30, 0.88);
+      backdrop-filter: blur(3px);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+      gap: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .board-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .overlay-icon {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+    .overlay-icon.success { color: var(--green); }
+    .overlay-icon.danger  { color: var(--red); }
+
+    .overlay-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .overlay-body {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--slate-lt);
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    /* ── BUTTONS (shared style, matches portfolio .btn) ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    .btn-primary { background: var(--cyan); color: var(--navy); }
+    .btn-primary:hover { background: #33dfff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,255,0.3); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+    /* ── CONTROLS ROW (below board) ── */
+    .controls-row {
+      display: flex;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    /* ── DIFFICULTY SELECT ── */
+    .difficulty {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px; overflow: hidden;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 0 40px rgba(0,212,255,0.07);
+      border-radius: 8px;
+      padding: 0.3rem;
+    }
+    .difficulty button {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: transparent;
+      border: none;
+      color: var(--slate-lt);
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .difficulty button.active {
+      background: var(--cyan);
+      color: var(--navy);
+      font-weight: 700;
+    }
+    .difficulty button:not(.active):hover { color: var(--cyan); }
+    .difficulty button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+    /* ── KEYBOARD HINT ── */
+    .key-hint {
+      margin-top: 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      max-width: 520px;
+    }
+    .key-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--slate-lt);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.35rem 0.7rem;
+      background: var(--card-bg);
+    }
+    .key-chip kbd {
+      font-family: 'Space Mono', monospace;
+      background: var(--navy-3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.05rem 0.4rem;
+      color: var(--white);
+      font-size: 0.7rem;
     }
 
-    .terminal-header {
-      display: flex; align-items: center;
-      padding: 0.75rem 1.25rem;
-      background: rgba(10,15,30,0.9);
-      border-bottom: 1px solid var(--border);
-      user-select: none; position: relative;
+    /* ── MOBILE D-PAD (touch controls) ── */
+    .dpad {
+      display: none;
+      margin-top: 1.75rem;
+      grid-template-columns: repeat(3, 56px);
+      grid-template-rows: repeat(3, 56px);
+      gap: 0.4rem;
+      justify-content: center;
     }
-    .terminal-dots { display: flex; gap: 0.45rem; margin-right: auto; }
-    .terminal-dots span { display: block; width: 12px; height: 12px; border-radius: 50%; }
-    .dot-red    { background: #FF5F57; }
-    .dot-yellow { background: #FEBC2E; }
-    .dot-green  { background: #28C840; }
-    .terminal-title {
-      position: absolute; left: 50%; transform: translateX(-50%);
-      font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--slate-lt);
-      pointer-events: none;
+    .dpad-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--cyan);
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s, transform 0.1s;
     }
-
-    .terminal-body {
-      padding: 1.25rem 1.5rem;
-      min-height: 320px; max-height: 420px;
-      overflow-y: auto; cursor: text;
-      font-family: 'Space Mono', monospace; font-size: 0.82rem; line-height: 1.65;
-    }
-    .terminal-body::-webkit-scrollbar { width: 4px; }
-    .terminal-body::-webkit-scrollbar-track { background: transparent; }
-    .terminal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    .t-line            { margin-bottom: 0.15rem; word-break: break-word; }
-    .t-line.welcome    { color: var(--cyan); }
-    .t-line.output     { color: #a0c4d8; white-space: pre; }
-    .t-line.cmd        { color: var(--white); }
-    .t-line.error      { color: #f87171; }
-    .t-line.easter     { color: var(--amber); }
-    .t-line.blank      { min-height: 1em; }
-
-    .terminal-input-row {
-      display: flex; align-items: center;
-      padding: 0.6rem 1.5rem 1rem; gap: 0.5rem;
-      border-top: 1px solid rgba(0,212,255,0.08);
-    }
-    .t-prompt { font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--cyan); white-space: nowrap; flex-shrink: 0; }
-    #t-input {
-      flex: 1; background: transparent; border: none; outline: none;
-      font-family: 'Space Mono', monospace; font-size: 0.82rem;
-      color: var(--white); caret-color: var(--cyan); min-width: 0;
-    }
+    .dpad-btn:active { background: rgba(0,212,255,0.18); transform: scale(0.95); }
+    .dpad-up    { grid-column: 2; grid-row: 1; }
+    .dpad-left  { grid-column: 1; grid-row: 2; }
+    .dpad-pause { grid-column: 2; grid-row: 2; color: var(--amber); font-size: 1rem; }
+    .dpad-right { grid-column: 3; grid-row: 2; }
+    .dpad-down  { grid-column: 2; grid-row: 3; }
 
     /* ── FOOTER ── */
     footer {
-      position: relative; z-index: 1; text-align: center;
-      padding: 2.5rem 5vw;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.75rem 5vw;
       border-top: 1px solid var(--border);
-      font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--slate);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--slate);
     }
     footer span { color: var(--cyan); }
-    footer a { color: var(--slate-lt); text-decoration: none; transition: color 0.2s; }
-    footer a:hover { color: var(--cyan); }
 
-    /* ── SCROLL REVEAL ── */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 860px) {
-      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-      .social-strip { display: none; }
-      .gate-card { max-width: 100%; }
-    }
-
+    /* ════════════════════════════════════════════════════════════
+       RESPONSIVE — board shrinks on small screens via the --cell
+       custom property, recalculated in JS on resize/orientation.
+    ════════════════════════════════════════════════════════════ */
     @media (max-width: 600px) {
-      .nav-links { gap: 1rem; }
-      .nav-links a:not(#openAuthBtn):not(#logoutBtn) { display: none; }
-      .hero { padding-top: 7rem; }
-      .connect-card { min-width: 160px; padding: 1.5rem; }
-      #terminal-section { padding: 4rem 4vw; }
-      .terminal-body { font-size: 0.75rem; max-height: 340px; padding: 1rem; }
-      .terminal-input-row { padding: 0.5rem 1rem 0.85rem; }
-      .t-prompt, #t-input { font-size: 0.75rem; }
-      .t-line.output { white-space: pre-wrap; }
-      .gate-socials { gap: 0.6rem; }
-      .gate-btn { font-size: 0.82rem; padding: 0.7rem 1rem; }
+      nav { padding: 1rem 4vw; }
+      .nav-back span.label { display: none; } /* icon-only back button on phones */
+      main { padding: 1.75rem 4vw 3rem; }
+      .key-hint { display: none; } /* keyboard hints are irrelevant on touch */
+      .dpad { display: grid; }
+      .controls-row .btn-ghost.pause-desktop { display: none; } /* pause lives in the d-pad on mobile */
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .reveal { transition: none; opacity: 1; transform: none; }
-      .cursor { animation: none; }
+      .board-overlay, .btn, .dpad-btn { transition: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ════════════════════════════════════════
-       AUTH MODAL — hidden by default (display:none),
-       opened only when #openAuthBtn is clicked.
-       Page content below is fully visible without it.
-  ════════════════════════════════════════ -->
-  <div id="login-gate" role="dialog" aria-modal="true" aria-label="Sign in">
-    <div class="gate-orb gate-orb-1"></div>
-    <div class="gate-orb gate-orb-2"></div>
+  <!-- Ambient background glow, purely decorative -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
-    <div class="gate-card">
+  <!-- ════════════════════════════════════════════════════════════
+       NAV — swap href="index.html" for wherever your homepage lives
+  ════════════════════════════════════════════════════════════ -->
+  <nav>
+    <a href="index.html" class="nav-logo">RH<span>.dev</span></a>
+    <a href="index.html" class="nav-back">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      <span class="label">Back to portfolio</span>
+    </a>
+  </nav>
 
-      <!-- Terminal title bar -->
-      <div class="gate-term-bar">
-        <div class="gate-dots">
-          <span class="dot-r"></span>
-          <span class="dot-y"></span>
-          <span class="dot-g"></span>
+  <main>
+    <div class="game-eyebrow">RasimOS Arcade</div>
+    <h1 class="game-title">Play <em>Snake</em></h1>
+    <p class="game-sub">
+      Classic grid-based Snake, rebuilt from scratch in vanilla JS. Eat the orbs,
+      grow longer, don't hit the walls or yourself. High score is saved locally
+      in your browser.
+    </p>
+
+    <!-- Score / High score / Speed readout -->
+    <div class="scorebar">
+      <div class="score-card">
+        <div class="score-label">Score</div>
+        <div class="score-value" id="scoreValue">0</div>
+      </div>
+      <div class="score-card">
+        <div class="score-label">Best</div>
+        <div class="score-value amber" id="bestValue">0</div>
+      </div>
+      <div class="score-card">
+        <div class="score-label">Length</div>
+        <div class="score-value" id="lengthValue">1</div>
+      </div>
+    </div>
+
+    <!-- Game frame -->
+    <div class="game-frame">
+      <div class="game-frame-bar">
+        <div class="frame-dots">
+          <span class="fd-red"></span><span class="fd-yellow"></span><span class="fd-green"></span>
         </div>
-        <div class="gate-term-title">rasim@portfolio:~ — sign in</div>
-        <button class="gate-close" id="closeAuthBtn" type="button" aria-label="Close sign-in dialog">&times;</button>
+        <div class="frame-title">rasim@portfolio:~/snake</div>
       </div>
 
-      <!-- Message -->
-      <div class="gate-log" id="gateLog">
-        <div class="gl-cyan">RasimOS v1.0.0 — sign-in module</div>
-        <div>Sign in to sync your session across tabs.</div>
-        <div class="gl-amber">Awaiting credentials...</div>
-      </div>
+      <div class="board-wrap" id="boardWrap">
+        <canvas id="board" width="0" height="0" aria-label="Snake game board" role="img"></canvas>
 
-      <!-- Auth divider -->
-      <div class="gate-divider"><span>// SIGN IN WITH</span></div>
-
-      <!-- Google sign-in — listener attached in JS, fires only on click -->
-      <div class="gate-socials">
-        <button class="gate-btn gate-btn-google" id="btn-google" type="button">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span class="gate-btn-label">Sign in with Gmail (Google)</span>
-          <span class="gate-btn-tag">OAUTH2</span>
-        </button>
-      </div><!-- /gate-socials -->
-
-      <!-- Access Granted overlay (shown after successful sign-in) -->
-      <div id="access-granted">
-        <div class="ag-lines" id="agLines"></div>
-        <div class="ag-bar-wrap"><div class="ag-bar" id="agBar"></div></div>
-      </div>
-
-      <div class="gate-note">
-        Secured via Firebase Authentication &nbsp;·&nbsp;
-        No data is stored without your consent.
-      </div>
-
-    </div><!-- /gate-card -->
-  </div><!-- /login-gate -->
-
-
-  <!-- ════════════════════════════════════════
-       PORTFOLIO CONTENT — visible by default,
-       no gate, no JS unlock required.
-  ════════════════════════════════════════ -->
-  <div id="portfolio-content">
-
-    <!-- NAV -->
-    <nav>
-      <div class="nav-logo">RH<span>.dev</span></div>
-      <ul class="nav-links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#terminal-section">Terminal</a></li>
-        <li><a href="#roadmap">Roadmap</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#connect">Connect</a></li>
-        <li><a href="#" id="openAuthBtn">Sign In</a></li>
-        <li><a href="#" id="logoutBtn">Log Out</a></li>
-      </ul>
-    </nav>
-
-    <!-- HERO -->
-    <section class="hero">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-
-      <div class="hero-eyebrow">CS Student &amp; Future Builder</div>
-
-      <h1 class="hero-name">
-        <span class="first">Rasim</span>
-        <span class="last">Huseynov</span>
-      </h1>
-
-      <div class="hero-terminal">
-        <span class="prompt">$</span>
-        <span class="typed-text" id="typed"></span><span class="cursor"></span>
-      </div>
-
-      <p class="hero-desc">
-        Aspiring Computer Science student at Baku Engineering University — building toward
-        a global tech career rooted in curiosity, discipline, and a drive to create
-        things that actually matter.
-      </p>
-
-      <div class="hero-cta">
-        <a href="#about" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7-7 7-7-7"/></svg>
-          Explore my story
-        </a>
-        <a href="#connect" class="btn btn-ghost">Get in touch</a>
-      </div>
-
-      <div class="social-strip">
-        <a href="https://www.linkedin.com/in/rasim-huseynov-89469b40a" target="_blank" rel="noopener" class="social-icon" aria-label="LinkedIn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-        </a>
-        <a href="https://github.com/rasimhuseynov" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-        </a>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about">
-      <div class="section-label">01 — About</div>
-      <h2 class="section-title">Code, ambition &amp;<br><em>a clear destination.</em></h2>
-
-      <div class="about-grid">
-        <div class="about-text reveal">
-          <p>
-            I'm <strong>Rasim Huseynov</strong>, a driven young technologist from Azerbaijan with
-            my sights set on studying <strong>Computer Science at Baku Engineering University (BEU)</strong>.
-            BEU's reputation for rigorous, practice-first engineering education makes it the ideal
-            launchpad for what I have in mind.
-          </p>
-          <p>
-            But my vision stretches further. After building a solid foundation at BEU, I plan
-            to pursue advanced studies in <strong>Estonia</strong> — one of Europe's most
-            digitally advanced nations and a beacon for tech-first thinking. Estonia's
-            e-governance model and vibrant startup ecosystem represent exactly the kind of
-            environment where I want to sharpen my craft.
-          </p>
-          <p>
-            Ultimately, my goal is a <strong>global tech career</strong> rooted in creating
-            software that solves real, meaningful problems — systems that improve lives,
-            streamline societies, and push what's technically possible just a little bit further.
-          </p>
-        </div>
-
-        <div class="about-cards reveal">
-          <div class="stat-card">
-            <div class="stat-card-icon">🎓</div>
-            <div class="stat-card-title">Target: Baku Engineering University</div>
-            <div class="stat-card-sub">BSc Computer Science — first milestone of many</div>
+        <!-- Overlay: re-used for start screen, pause screen, and game-over screen -->
+        <div class="board-overlay visible" id="overlay">
+          <div class="overlay-icon" id="overlayIcon">// READY</div>
+          <div class="overlay-heading" id="overlayHeading">Press Start</div>
+          <div class="overlay-body" id="overlayBody">
+            Use arrow keys or WASD to move. On mobile, swipe or use the on-screen
+            controls below.
           </div>
-          <div class="stat-card">
-            <div class="stat-card-icon">🌍</div>
-            <div class="stat-card-title">Next horizon: Estonia</div>
-            <div class="stat-card-sub">Graduate study in Europe's digital capital</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-icon">⚡</div>
-            <div class="stat-card-title">Mission: Impactful Projects</div>
-            <div class="stat-card-sub">Software that moves the needle on real-world problems</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-icon">🇦🇿</div>
-            <div class="stat-card-title">Based in Azerbaijan</div>
-            <div class="stat-card-sub">Baku → Tallinn → The world</div>
-          </div>
+          <button class="btn btn-primary" id="overlayBtn" type="button">Start Game</button>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- TERMINAL SIMULATOR -->
-    <section id="terminal-section">
-      <div class="section-label">01.5 — Interactive</div>
-      <h2 class="section-title" style="margin-bottom:2rem;">Try the <em>terminal.</em></h2>
+    <!-- Difficulty selector -->
+    <div class="difficulty" role="group" aria-label="Difficulty">
+      <button type="button" data-speed="140">Easy</button>
+      <button type="button" data-speed="100" class="active">Normal</button>
+      <button type="button" data-speed="70">Hard</button>
+      <button type="button" data-speed="45">Insane</button>
+    </div>
 
-      <div class="terminal-wrap reveal" id="terminalWrap">
-        <div class="terminal-header">
-          <div class="terminal-dots">
-            <span class="dot-red"></span>
-            <span class="dot-yellow"></span>
-            <span class="dot-green"></span>
-          </div>
-          <div class="terminal-title">rasim@portfolio:~</div>
-        </div>
-        <div class="terminal-body" id="terminalBody">
-          <div class="t-line welcome">Welcome to Rasim OS Terminal v1.0.0. Type "help" to see available commands.</div>
-        </div>
-        <div class="terminal-input-row">
-          <span class="t-prompt">rasim@portfolio:~$&nbsp;</span>
-          <input type="text" id="t-input" autocomplete="off" autocorrect="off"
-                 autocapitalize="off" spellcheck="false" aria-label="Terminal input" />
-        </div>
-      </div>
-    </section>
+    <!-- Primary controls -->
+    <div class="controls-row">
+      <button class="btn btn-ghost pause-desktop" id="pauseBtn" type="button">Pause</button>
+      <button class="btn btn-ghost" id="resetBtn" type="button">Reset</button>
+    </div>
 
-    <!-- ROADMAP -->
-    <section class="roadmap" id="roadmap">
-      <div class="section-label">02 — Roadmap</div>
-      <h2 class="section-title">Where I'm going &amp;<br><em>how I'll get there.</em></h2>
+    <!-- Keyboard legend (desktop only) -->
+    <div class="key-hint">
+      <span class="key-chip"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move</span>
+      <span class="key-chip"><kbd>Space</kbd> to pause / resume</span>
+      <span class="key-chip"><kbd>R</kbd> to reset</span>
+    </div>
 
-      <div class="timeline reveal">
-        <div class="timeline-item">
-          <div class="timeline-year">NOW</div>
-          <div class="timeline-heading">Laying the groundwork</div>
-          <div class="timeline-body">
-            Sharpening core CS fundamentals — algorithms, data structures, mathematics —
-            and building personal projects that push my skills beyond the classroom.
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-year">NEXT</div>
-          <div class="timeline-heading">BSc at Baku Engineering University</div>
-          <div class="timeline-body">
-            Enrolling in BEU's Computer Science programme — academic rigour, hands-on
-            engineering labs, and a network of future-focused peers in Azerbaijan's
-            premier tech institution.
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-year">FUTURE</div>
-          <div class="timeline-heading">Graduate studies in Estonia</div>
-          <div class="timeline-body">
-            Taking my education to Europe — deepening expertise in areas like distributed
-            systems, AI, or cybersecurity within Estonia's uniquely digital-first society.
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-year">VISION</div>
-          <div class="timeline-heading">Global tech career &amp; meaningful impact</div>
-          <div class="timeline-body">
-            Working on products and systems that serve millions — contributing to open
-            source, leading engineering teams, and building technology that creates
-            genuine, lasting value for people.
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Touch D-pad (mobile only, shown via CSS media query) -->
+    <div class="dpad" aria-label="Touch controls">
+      <button class="dpad-btn dpad-up" type="button" data-dir="up" aria-label="Move up">▲</button>
+      <button class="dpad-btn dpad-left" type="button" data-dir="left" aria-label="Move left">◀</button>
+      <button class="dpad-btn dpad-pause" type="button" id="dpadPause" aria-label="Pause">❚❚</button>
+      <button class="dpad-btn dpad-right" type="button" data-dir="right" aria-label="Move right">▶</button>
+      <button class="dpad-btn dpad-down" type="button" data-dir="down" aria-label="Move down">▼</button>
+    </div>
+  </main>
 
-    <!-- SKILLS -->
-    <section id="skills">
-      <div class="section-label">03 — Skills &amp; Interests</div>
-      <h2 class="section-title">What I'm <em>building with.</em></h2>
-
-      <div class="skills-grid reveal">
-        <div class="skill-pill"><span class="skill-dot"></span>Python</div>
-        <div class="skill-pill"><span class="skill-dot"></span>JavaScript</div>
-        <div class="skill-pill"><span class="skill-dot"></span>HTML &amp; CSS</div>
-        <div class="skill-pill"><span class="skill-dot amber"></span>Algorithms</div>
-        <div class="skill-pill"><span class="skill-dot amber"></span>Data Structures</div>
-        <div class="skill-pill"><span class="skill-dot amber"></span>Git &amp; GitHub</div>
-        <div class="skill-pill"><span class="skill-dot purple"></span>Problem Solving</div>
-        <div class="skill-pill"><span class="skill-dot purple"></span>Linux Basics</div>
-        <div class="skill-pill"><span class="skill-dot purple"></span>Databases (SQL)</div>
-        <div class="skill-pill"><span class="skill-dot"></span>Web Development</div>
-      </div>
-    </section>
-
-    <!-- CONNECT -->
-    <section id="connect" class="connect">
-      <div class="section-label">04 — Connect</div>
-      <h2 class="section-title">Let's build something<br><em>worth building.</em></h2>
-      <p class="connect-desc reveal">
-        I'm always open to connecting with fellow students, engineers, and anyone who
-        cares about technology done right. Find me on LinkedIn or explore my work on GitHub.
-      </p>
-
-      <div class="connect-cards reveal">
-        <a href="https://www.linkedin.com/in/rasim-huseynov-89469b40a" target="_blank" rel="noopener" class="connect-card">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          <div class="connect-card-label">LinkedIn</div>
-          <div class="connect-card-handle">rasim-huseynov</div>
-        </a>
-        <a href="https://github.com/rasimhuseynov" target="_blank" rel="noopener" class="connect-card">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-          <div class="connect-card-label">GitHub</div>
-          <div class="connect-card-handle">rasimhuseynov</div>
-        </a>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-      <span>Rasim Huseynov</span> — Built with curiosity &amp; intent · Baku, Azerbaijan · 2025
-      &nbsp;·&nbsp; <a href="/privacy-policy.html">Privacy Policy</a>
-    </footer>
-
-  </div><!-- /portfolio-content -->
-
-
-  <!-- ════════════════════════════════════════
-       SCRIPTS
-  ════════════════════════════════════════ -->
-
-  <!-- Firebase SDK compat bundles -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <footer>
+    <span>RasimOS Arcade</span> — Snake · Built with HTML5 Canvas &amp; vanilla JS
+  </footer>
 
   <script>
     /* ════════════════════════════════════════════════════════════
-       FIREBASE CONFIGURATION — your live config values, preserved.
-       If you see auth/api-key-not-valid or auth/unauthorized-domain:
-       1. Firebase Console → Authentication → Settings →
-          Authorized Domains → add your domain
-       2. Google Cloud Console → APIs & Services → Credentials →
-          Browser Key → Application Restrictions →
-          add your domain as an allowed referrer
-       3. If the key was exposed publicly, regenerate it and
-          paste the new value here.
+       SNAKE GAME — vanilla JS, HTML5 Canvas
+       ────────────────────────────────────────────────────────────
+       Everything lives in one IIFE so it can't leak globals into
+       the rest of your site when you paste this into your codebase.
+
+       QUICK TWEAK GUIDE
+       - Grid size:     change --cols / --rows in the CSS :root block
+                         (keep them equal-ish for a square-feeling board)
+       - Cell size:      change --cell in CSS, or let resizeBoard() auto-fit
+       - Starting speed: the "Normal" button's data-speed value (ms per tick)
+       - Colors:         CSS vars at the top of <style>, re-read in draw()
+       - Wrap-around:    set WRAP_AROUND_WALLS to true below
     ════════════════════════════════════════════════════════════ */
-    const firebaseConfig = {
-      apiKey:            "AIzaSyAXh-IdL2GpoaKZUyXO53tfz8phh_UrMIk",
-      authDomain:        "rasim-auth-27fe8.firebaseapp.com",
-      projectId:         "rasim-auth-27fe8",
-      storageBucket:     "rasim-auth-27fe8.firebasestorage.app",
-      messagingSenderId: "514793748377",
-      appId:             "1:514793748377:web:2b3d7637190d66bd8d0508",
-      measurementId:     "G-S2PKQ27P3H"
-    };
+    (function () {
+      'use strict';
 
-    // Initialise Firebase (guard against double-init on hot reload)
-    const firebaseApp = firebase.apps.length
-      ? firebase.app()
-      : firebase.initializeApp(firebaseConfig);
+      // ── CONFIG ────────────────────────────────────────────────
+      const COLS = 21;              // must match --cols in CSS
+      const ROWS = 21;              // must match --rows in CSS
+      const STORAGE_KEY = 'rasimos_snake_highscore';
+      const WRAP_AROUND_WALLS = false; // true = snake passes through edges instead of dying
 
-    const auth = firebase.auth();
-    auth.useDeviceLanguage();
+      // ── DOM REFERENCES ───────────────────────────────────────
+      const canvas      = document.getElementById('board');
+      const ctx         = canvas.getContext('2d');
+      const boardWrap    = document.getElementById('boardWrap');
+      const overlay      = document.getElementById('overlay');
+      const overlayIcon  = document.getElementById('overlayIcon');
+      const overlayHeading = document.getElementById('overlayHeading');
+      const overlayBody  = document.getElementById('overlayBody');
+      const overlayBtn   = document.getElementById('overlayBtn');
+      const scoreValueEl = document.getElementById('scoreValue');
+      const bestValueEl  = document.getElementById('bestValue');
+      const lengthValueEl = document.getElementById('lengthValue');
+      const pauseBtn      = document.getElementById('pauseBtn');
+      const resetBtn       = document.getElementById('resetBtn');
+      const difficultyBtns = document.querySelectorAll('.difficulty button');
+      const dpadButtons     = document.querySelectorAll('.dpad-btn[data-dir]');
+      const dpadPause      = document.getElementById('dpadPause');
 
-    // Single provider — Google only
-    const googleProvider = new firebase.auth.GoogleAuthProvider();
-  </script>
-
-  <script>
-    /* ════════════════════════════════════════════════════════════
-       AUTH MODAL + SESSION STATE
-       - The modal is display:none by default (see CSS) and is
-         only shown when #openAuthBtn is clicked.
-       - No auth function runs automatically on page load other
-         than registering the onAuthStateChanged listener, which
-         just reads existing session state — it never opens the
-         modal or triggers a sign-in popup by itself.
-    ════════════════════════════════════════════════════════════ */
-    window.addEventListener('DOMContentLoaded', () => {
-      const loginGate = document.getElementById('login-gate');
-      const openBtn   = document.getElementById('openAuthBtn');
-      const closeBtn  = document.getElementById('closeAuthBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const googleBtn = document.getElementById('btn-google');
-      const overlay   = document.getElementById('access-granted');
-      const linesEl   = document.getElementById('agLines');
-      const bar       = document.getElementById('agBar');
-
-      function resetModalState() {
-        overlay.classList.remove('show');
-        linesEl.innerHTML = '';
-        bar.style.width = '0%';
-        document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
-      }
-
-      function openModal(e) {
-        if (e) e.preventDefault();
-        resetModalState();
-        loginGate.classList.add('open');
-      }
-
-      function closeModal() {
-        loginGate.classList.remove('open');
-        resetModalState();
-      }
-
-      // Open modal — only fires on explicit click
-      openBtn.addEventListener('click', openModal);
-
-      // Close modal — explicit close button
-      closeBtn.addEventListener('click', closeModal);
-
-      // Close modal — click on backdrop (outside the card)
-      loginGate.addEventListener('click', (e) => {
-        if (e.target === loginGate) closeModal();
-      });
-
-      // Close modal — Escape key
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && loginGate.classList.contains('open')) closeModal();
-      });
-
-      // Google sign-in — only fires on explicit click
-      googleBtn.addEventListener('click', function () {
-        handleGoogleSignIn();
-      });
-
-      // Log out — only fires on explicit click
-      logoutBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        auth.signOut();
-      });
-
-      /* ──────────────────────────────────────────────────────────
-         SESSION STATE
-         Fires once on load with the current state (no popups,
-         no modal), then again whenever auth state changes —
-         including changes made in other tabs.
-      ────────────────────────────────────────────────────────── */
-      // Default state while Firebase determines whether a session exists
-      openBtn.style.display   = 'inline-block';
-      logoutBtn.style.display = 'none';
-
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          openBtn.style.display   = 'none';
-          logoutBtn.style.display = 'inline-block';
-        } else {
-          openBtn.style.display   = 'inline-block';
-          logoutBtn.style.display = 'none';
-        }
-      });
-    });
-
-    /* ════════════════════════════════════════════════════════════
-       GOOGLE SIGN-IN HANDLER
-       Called only from the click listener above.
-    ════════════════════════════════════════════════════════════ */
-    function handleGoogleSignIn() {
-      document.querySelectorAll('.gate-btn').forEach(b => b.disabled = true);
-
-      auth.signInWithPopup(googleProvider)
-        .then(() => {
-          runAccessGranted();
-        })
-        .catch(error => {
-          const log = document.getElementById('gateLog');
-          const e = document.createElement('div');
-          e.className = 'gl-red';
-
-          // Translate common Firebase error codes into plain instructions
-          const hints = {
-            'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
-              '[ERR] API key rejected. Steps: (1) Add your domain to Firebase Auth → Authorized Domains. (2) In Google Cloud Console → Credentials, restrict the Browser Key to your domain. (3) If key was exposed publicly, regenerate it.',
-            'auth/unauthorized-domain':
-              '[ERR] Domain not authorised. Go to Firebase Console → Authentication → Settings → Authorized Domains and add your domain.',
-            'auth/popup-blocked':
-              '[ERR] Popup was blocked by the browser. Allow popups for this site and try again.',
-            'auth/popup-closed-by-user':
-              '[ERR] Sign-in popup was closed before completing. Please try again.',
-            'auth/cancelled-popup-request':
-              '[ERR] Only one popup can be open at a time. Please try again.',
-            'auth/account-exists-with-different-credential':
-              '[ERR] An account already exists with this email under a different provider.',
-          };
-
-          e.textContent = hints[error.code] || ('[ERR] ' + error.message);
-          log.appendChild(e);
-          log.scrollTop = log.scrollHeight;
-          document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
-        });
-    }
-
-    /* ════════════════════════════════════════════════════════════
-       ACCESS GRANTED SEQUENCE
-       Short success animation, then auto-closes the modal.
-       The onAuthStateChanged listener (above) handles swapping
-       the Sign In / Log Out links once Firebase confirms the
-       session — this is purely visual feedback.
-    ════════════════════════════════════════════════════════════ */
-    function runAccessGranted() {
-      const overlay = document.getElementById('access-granted');
-      const linesEl = document.getElementById('agLines');
-      const bar     = document.getElementById('agBar');
-
-      overlay.classList.add('show');
-
-      const lines = [
-        { text: '[AUTH]  Provider handshake: GOOGLE',  cls: 'ag-line cyan',  t: 0   },
-        { text: '[AUTH]  Token verified ✓',             cls: 'ag-line green', t: 350 },
-        { text: '[SYS]   Session established.',         cls: 'ag-line amber', t: 650 },
-        { text: '▓▓▓▓▓▓▓▓▓▓  WELCOME BACK  ▓▓▓▓▓▓▓▓▓▓', cls: 'ag-line green', t: 950 },
-      ];
-
-      lines.forEach(({ text, cls, t }) => {
-        setTimeout(() => {
-          const d = document.createElement('div');
-          d.className = cls;
-          d.textContent = text;
-          linesEl.appendChild(d);
-          requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('vis')));
-        }, t);
-      });
-
-      setTimeout(() => { bar.style.width = '100%'; }, 400);
-
-      setTimeout(() => {
-        document.getElementById('login-gate').classList.remove('open');
-        overlay.classList.remove('show');
-        linesEl.innerHTML = '';
-        bar.style.width = '0%';
-        document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
-      }, 1800);
-    }
-  </script>
-
-  <script>
-    /* ════════════════════════════════════════════════════════════
-       PORTFOLIO INIT
-       Runs immediately on DOMContentLoaded — the page is fully
-       visible and interactive without any auth step.
-    ════════════════════════════════════════════════════════════ */
-    window.addEventListener('DOMContentLoaded', () => {
-      // Hero typewriter
-      const phrases = [
-        'buildFuture("BEU → Estonia → World");',
-        'learn(algorithms, systems, creativity);',
-        'git commit -m "another step forward"',
-        'dream.setGoal("global tech impact");',
-      ];
-      let pi = 0, ci = 0, deleting = false;
-      const typedEl = document.getElementById('typed');
-
-      function type() {
-        const current = phrases[pi];
-        if (!deleting) {
-          typedEl.textContent = current.slice(0, ++ci);
-          if (ci === current.length) { deleting = true; setTimeout(type, 1800); return; }
-        } else {
-          typedEl.textContent = current.slice(0, --ci);
-          if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
-        }
-        setTimeout(type, deleting ? 32 : 58);
-      }
-      type();
-
-      // Scroll reveal
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-        });
-      }, { threshold: 0.12 });
-      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-      // Terminal simulator
-      initTerminal();
-    });
-
-    /* ════════════════════════════════════════════════════════════
-       LINUX TERMINAL SIMULATOR
-    ════════════════════════════════════════════════════════════ */
-    function initTerminal() {
-      const body  = document.getElementById('terminalBody');
-      const input = document.getElementById('t-input');
-      const wrap  = document.getElementById('terminalWrap');
-      if (!body || !input) return;
-
-      wrap.addEventListener('click', () => input.focus());
-
-      function print(text, cls) {
-        const d = document.createElement('div');
-        d.className = 't-line ' + (cls || '');
-        d.textContent = text;
-        body.appendChild(d);
-      }
-
-      function blank() { print('', 'blank'); }
-      function scrollBottom() { body.scrollTop = body.scrollHeight; }
-
-      const COMMANDS = {
-        help() {
-          blank();
-          print('Available commands:', 'output');
-          print('  help    — show this list',       'output');
-          print('  about   — who is Rasim?',        'output');
-          print('  skills  — tech stack overview',  'output');
-          print('  clear   — clear the terminal',   'output');
-          print('  sudo    — nice try ;)',           'output');
-          blank();
-        },
-        clear() { body.innerHTML = ''; },
-        about() {
-          blank();
-          print('┌─────────────────────────────────────────┐', 'output');
-          print('│           RASIM HUSEYNOV                │', 'output');
-          print('│         CS Student & Builder            │', 'output');
-          print('├─────────────────────────────────────────┤', 'output');
-          print('│ Location  : Baku, Azerbaijan            │', 'output');
-          print('│ Target    : Baku Engineering University │', 'output');
-          print('│ Degree    : BSc Computer Science        │', 'output');
-          print('│ Next stop : Estonia (graduate studies)  │', 'output');
-          print('│ Goal      : Global tech career          │', 'output');
-          print('│ Mission   : Build impactful software    │', 'output');
-          print('├─────────────────────────────────────────┤', 'output');
-          print('│ GitHub  : github.com/rasimhuseynov      │', 'output');
-          print('│ LinkedIn: /in/rasim-huseynov-89469b40a  │', 'output');
-          print('└─────────────────────────────────────────┘', 'output');
-          blank();
-        },
-        skills() {
-          blank();
-          print('── TECH STACK ─────────────────────────────', 'output');
-          print('',                                            'output');
-          print('  Languages      Python · JavaScript · SQL', 'output');
-          print('  Web            HTML5 · CSS3 · Web Dev',    'output');
-          print('  CS Core        Algorithms · Data Structures','output');
-          print('  Tooling        Git · GitHub · Linux CLI',  'output');
-          print('  Interests      Systems · AI · Open Source','output');
-          print('',                                            'output');
-          print('── LEARNING ───────────────────────────────', 'output');
-          print('  Currently deepening: problem solving &',   'output');
-          print('  software engineering fundamentals.',       'output');
-          blank();
-        },
-        sudo() {
-          blank();
-          print('[SUDO] Authenticating...', 'easter');
-          setTimeout(() => {
-            print('[SUDO] Scanning retinal biometrics... ▓▓▓░░░░', 'easter');
-            setTimeout(() => {
-              print('[SUDO] ACCESS DENIED ✗', 'error');
-              print("You are not authorized to hack Rasim's mainframe.", 'easter');
-              print('This incident has been logged. 👁️', 'easter');
-              blank();
-              scrollBottom();
-            }, 800);
-            scrollBottom();
-          }, 600);
-        }
+      // ── COLOR TOKENS (read once; mirrors the CSS custom properties) ──
+      const COLORS = {
+        bg: '#0A0F1E',
+        gridLine: 'rgba(0, 212, 255, 0.04)',
+        snakeHead: '#00D4FF',
+        snakeBody: '#0099bb',
+        snakeBodyAlt: '#0c7d99',
+        food: '#FFB347',
+        foodGlow: 'rgba(255, 179, 71, 0.45)',
       };
 
-      input.addEventListener('keydown', function(e) {
-        if (e.key !== 'Enter') return;
-        const raw = input.value.trim();
-        input.value = '';
+      // ── GAME STATE ───────────────────────────────────────────
+      let cellSize = 24;          // recalculated responsively
+      let snake = [];             // array of {x, y} cells, index 0 = head
+      let direction = { x: 1, y: 0 };
+      let pendingDirection = { x: 1, y: 0 }; // buffers input between ticks to avoid double-turns
+      let food = { x: 0, y: 0 };
+      let score = 0;
+      let best = Number(localStorage.getItem(STORAGE_KEY)) || 0;
+      let tickMs = 100;           // current speed; lower = faster
+      let tickHandle = null;
+      let gameState = 'idle';     // 'idle' | 'running' | 'paused' | 'over'
+      let frameCount = 0;         // used for a subtle food pulse animation
 
-        const echo = document.createElement('div');
-        echo.className = 't-line cmd';
-        echo.innerHTML = '<span style="color:var(--cyan)">rasim@portfolio:~$</span> ' +
-          raw.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        body.appendChild(echo);
+      bestValueEl.textContent = best;
 
-        if (!raw) { scrollBottom(); return; }
+      // ── RESPONSIVE SIZING ────────────────────────────────────
+      // Keeps the canvas crisp on any screen by sizing cells to fit
+      // the available width while staying an integer pixel value
+      // (integer cell sizes avoid blurry/aliased grid lines).
+      function resizeBoard() {
+        const maxWidth = Math.min(boardWrap.clientWidth || 480, 520);
+        const rawCell = Math.floor(maxWidth / COLS);
+        cellSize = Math.max(12, rawCell); // never shrink below 12px (touch usability floor)
 
-        const cmd = raw.toLowerCase().split(' ')[0];
-        if (COMMANDS[cmd]) {
-          COMMANDS[cmd]();
-        } else {
-          blank();
-          print('Command not found: ' + raw + '. Type "help" for a list of commands.', 'error');
-          blank();
+        document.documentElement.style.setProperty('--cell', cellSize + 'px');
+
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width  = COLS * cellSize * dpr;
+        canvas.height = ROWS * cellSize * dpr;
+        canvas.style.width  = (COLS * cellSize) + 'px';
+        canvas.style.height = (ROWS * cellSize) + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        draw(); // redraw immediately so resizing never shows a blank frame
+      }
+
+      // ── GAME SETUP ───────────────────────────────────────────
+      function resetGame() {
+        const startX = Math.floor(COLS / 2);
+        const startY = Math.floor(ROWS / 2);
+
+        snake = [
+          { x: startX - 1, y: startY },
+          { x: startX - 2, y: startY },
+          { x: startX - 3, y: startY },
+        ];
+        direction = { x: 1, y: 0 };
+        pendingDirection = { x: 1, y: 0 };
+        score = 0;
+        frameCount = 0;
+        updateScoreUI();
+        placeFood();
+        draw();
+      }
+
+      // Places food on a random empty cell (never on top of the snake)
+      function placeFood() {
+        let candidate;
+        let attempts = 0;
+        do {
+          candidate = {
+            x: Math.floor(Math.random() * COLS),
+            y: Math.floor(Math.random() * ROWS),
+          };
+          attempts++;
+          // Safety valve: if the board is nearly full, stop searching
+          // after a reasonable number of tries rather than looping forever.
+          if (attempts > 500) break;
+        } while (snake.some(seg => seg.x === candidate.x && seg.y === candidate.y));
+
+        food = candidate;
+      }
+
+      function updateScoreUI() {
+        scoreValueEl.textContent = score;
+        lengthValueEl.textContent = snake.length;
+        if (score > best) {
+          best = score;
+          bestValueEl.textContent = best;
+          localStorage.setItem(STORAGE_KEY, String(best));
         }
-        scrollBottom();
+      }
+
+      // ── MAIN LOOP ────────────────────────────────────────────
+      function startLoop() {
+        stopLoop();
+        tickHandle = setInterval(tick, tickMs);
+      }
+
+      function stopLoop() {
+        if (tickHandle) {
+          clearInterval(tickHandle);
+          tickHandle = null;
+        }
+      }
+
+      function tick() {
+        direction = pendingDirection;
+
+        const head = snake[0];
+        let nextX = head.x + direction.x;
+        let nextY = head.y + direction.y;
+
+        if (WRAP_AROUND_WALLS) {
+          nextX = (nextX + COLS) % COLS;
+          nextY = (nextY + ROWS) % ROWS;
+        } else if (nextX < 0 || nextX >= COLS || nextY < 0 || nextY >= ROWS) {
+          return gameOver('wall');
+        }
+
+        // Self-collision check (skip the tail cell — it will move away
+        // this same tick unless the snake just ate, handled naturally
+        // since we check against the pre-growth body)
+        if (snake.some(seg => seg.x === nextX && seg.y === nextY)) {
+          return gameOver('self');
+        }
+
+        const newHead = { x: nextX, y: nextY };
+        snake.unshift(newHead);
+
+        const ateFood = newHead.x === food.x && newHead.y === food.y;
+        if (ateFood) {
+          score += 10;
+          updateScoreUI();
+          placeFood();
+          // Speed ramps up slightly every 5 food items, capped so it
+          // never becomes literally unplayable.
+          if (score % 50 === 0 && tickMs > 40) {
+            tickMs -= 4;
+            startLoop();
+          }
+        } else {
+          snake.pop(); // move forward without growing
+        }
+
+        frameCount++;
+        draw();
+      }
+
+      function gameOver(reason) {
+        stopLoop();
+        gameState = 'over';
+
+        overlayIcon.textContent = '// GAME OVER';
+        overlayIcon.className = 'overlay-icon danger';
+        overlayHeading.textContent = 'You crashed';
+        overlayBody.textContent = reason === 'self'
+          ? `Ran into yourself at length ${snake.length}. Final score: ${score}.`
+          : `Hit the wall at length ${snake.length}. Final score: ${score}.`;
+        overlayBtn.textContent = 'Play Again';
+        showOverlay();
+      }
+
+      // ── RENDERING ────────────────────────────────────────────
+      function draw() {
+        // Background
+        ctx.fillStyle = COLORS.bg;
+        ctx.fillRect(0, 0, COLS * cellSize, ROWS * cellSize);
+
+        // Subtle grid lines for a "terminal grid" feel matching the site
+        ctx.strokeStyle = COLORS.gridLine;
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= COLS; x++) {
+          ctx.beginPath();
+          ctx.moveTo(x * cellSize + 0.5, 0);
+          ctx.lineTo(x * cellSize + 0.5, ROWS * cellSize);
+          ctx.stroke();
+        }
+        for (let y = 0; y <= ROWS; y++) {
+          ctx.beginPath();
+          ctx.moveTo(0, y * cellSize + 0.5);
+          ctx.lineTo(COLS * cellSize, y * cellSize + 0.5);
+          ctx.stroke();
+        }
+
+        // Food (pulsing glow circle)
+        const pulse = 0.5 + 0.5 * Math.sin(frameCount * 0.25);
+        const foodRadius = cellSize * (0.32 + pulse * 0.06);
+        const fx = food.x * cellSize + cellSize / 2;
+        const fy = food.y * cellSize + cellSize / 2;
+
+        ctx.beginPath();
+        ctx.fillStyle = COLORS.foodGlow;
+        ctx.arc(fx, fy, foodRadius * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = COLORS.food;
+        ctx.arc(fx, fy, foodRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Snake body
+        snake.forEach((seg, i) => {
+          const isHead = i === 0;
+          const pad = isHead ? 1 : 2; // head drawn slightly larger than body
+          ctx.fillStyle = isHead
+            ? COLORS.snakeHead
+            : (i % 2 === 0 ? COLORS.snakeBody : COLORS.snakeBodyAlt);
+
+          const px = seg.x * cellSize + pad;
+          const py = seg.y * cellSize + pad;
+          const size = cellSize - pad * 2;
+          const radius = isHead ? size * 0.35 : size * 0.25;
+
+          drawRoundedRect(px, py, size, size, radius);
+        });
+
+        // Eyes on the head for a touch of character
+        if (snake.length) {
+          drawEyes(snake[0]);
+        }
+      }
+
+      function drawRoundedRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      function drawEyes(head) {
+        const cx = head.x * cellSize + cellSize / 2;
+        const cy = head.y * cellSize + cellSize / 2;
+        const offset = cellSize * 0.18;
+        const eyeR = Math.max(1.5, cellSize * 0.07);
+
+        // Eye placement shifts based on current heading
+        let e1 = { x: cx, y: cy }, e2 = { x: cx, y: cy };
+        if (direction.x === 1)  { e1 = { x: cx + offset, y: cy - offset }; e2 = { x: cx + offset, y: cy + offset }; }
+        if (direction.x === -1) { e1 = { x: cx - offset, y: cy - offset }; e2 = { x: cx - offset, y: cy + offset }; }
+        if (direction.y === 1)  { e1 = { x: cx - offset, y: cy + offset }; e2 = { x: cx + offset, y: cy + offset }; }
+        if (direction.y === -1) { e1 = { x: cx - offset, y: cy - offset }; e2 = { x: cx + offset, y: cy - offset }; }
+
+        ctx.fillStyle = COLORS.bg;
+        [e1, e2].forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, eyeR, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // ── OVERLAY HELPERS ──────────────────────────────────────
+      function showOverlay() { overlay.classList.add('visible'); }
+      function hideOverlay() { overlay.classList.remove('visible'); }
+
+      function showStartScreen() {
+        gameState = 'idle';
+        overlayIcon.textContent = '// READY';
+        overlayIcon.className = 'overlay-icon';
+        overlayHeading.textContent = 'Press Start';
+        overlayBody.textContent = 'Use arrow keys or WASD to move. On mobile, swipe or use the on-screen controls below.';
+        overlayBtn.textContent = 'Start Game';
+        showOverlay();
+      }
+
+      function showPauseScreen() {
+        overlayIcon.textContent = '// PAUSED';
+        overlayIcon.className = 'overlay-icon';
+        overlayHeading.textContent = 'Paused';
+        overlayBody.textContent = `Score: ${score} · Length: ${snake.length}`;
+        overlayBtn.textContent = 'Resume';
+        showOverlay();
+      }
+
+      // ── STATE TRANSITIONS ────────────────────────────────────
+      function startGame() {
+        if (gameState === 'idle' || gameState === 'over') {
+          resetGame();
+        }
+        gameState = 'running';
+        hideOverlay();
+        startLoop();
+      }
+
+      function togglePause() {
+        if (gameState === 'running') {
+          gameState = 'paused';
+          stopLoop();
+          showPauseScreen();
+        } else if (gameState === 'paused') {
+          gameState = 'running';
+          hideOverlay();
+          startLoop();
+        }
+      }
+
+      function fullReset() {
+        stopLoop();
+        resetGame();
+        showStartScreen();
+      }
+
+      // ── INPUT: KEYBOARD ──────────────────────────────────────
+      // pendingDirection is buffered (not applied instantly) so a fast
+      // double key-press can't reverse the snake into itself within
+      // a single tick.
+      function setDirection(nx, ny) {
+        // Block 180° reversals relative to the *current* direction
+        if (direction.x === -nx && direction.y === -ny) return;
+        pendingDirection = { x: nx, y: ny };
+      }
+
+      window.addEventListener('keydown', (e) => {
+        switch (e.key) {
+          case 'ArrowUp': case 'w': case 'W':
+            e.preventDefault(); setDirection(0, -1);
+            if (gameState === 'idle' || gameState === 'over') startGame();
+            break;
+          case 'ArrowDown': case 's': case 'S':
+            e.preventDefault(); setDirection(0, 1);
+            if (gameState === 'idle' || gameState === 'over') startGame();
+            break;
+          case 'ArrowLeft': case 'a': case 'A':
+            e.preventDefault(); setDirection(-1, 0);
+            if (gameState === 'idle' || gameState === 'over') startGame();
+            break;
+          case 'ArrowRight': case 'd': case 'D':
+            e.preventDefault(); setDirection(1, 0);
+            if (gameState === 'idle' || gameState === 'over') startGame();
+            break;
+          case ' ':
+            e.preventDefault();
+            if (gameState === 'idle' || gameState === 'over') startGame();
+            else togglePause();
+            break;
+          case 'r': case 'R':
+            fullReset();
+            break;
+        }
       });
 
-      input.focus();
-    }
+      // ── INPUT: BUTTONS ───────────────────────────────────────
+      overlayBtn.addEventListener('click', () => {
+        if (gameState === 'idle' || gameState === 'over') startGame();
+        else if (gameState === 'paused') togglePause();
+      });
+      pauseBtn.addEventListener('click', () => {
+        if (gameState === 'running' || gameState === 'paused') togglePause();
+      });
+      resetBtn.addEventListener('click', fullReset);
+      dpadPause.addEventListener('click', () => {
+        if (gameState === 'running' || gameState === 'paused') togglePause();
+      });
+
+      // ── INPUT: TOUCH D-PAD ───────────────────────────────────
+      const DIR_MAP = {
+        up:    { x: 0, y: -1 },
+        down:  { x: 0, y: 1 },
+        left:  { x: -1, y: 0 },
+        right: { x: 1, y: 0 },
+      };
+      dpadButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const d = DIR_MAP[btn.dataset.dir];
+          setDirection(d.x, d.y);
+          if (gameState === 'idle' || gameState === 'over') startGame();
+        });
+      });
+
+      // ── INPUT: SWIPE GESTURES ────────────────────────────────
+      let touchStart = null;
+      boardWrap.addEventListener('touchstart', (e) => {
+        const t = e.changedTouches[0];
+        touchStart = { x: t.clientX, y: t.clientY };
+      }, { passive: true });
+
+      boardWrap.addEventListener('touchend', (e) => {
+        if (!touchStart) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touchStart.x;
+        const dy = t.clientY - touchStart.y;
+        const absDx = Math.abs(dx), absDy = Math.abs(dy);
+        const SWIPE_THRESHOLD = 24; // minimum px to register as a swipe
+
+        if (Math.max(absDx, absDy) > SWIPE_THRESHOLD) {
+          if (absDx > absDy) {
+            setDirection(dx > 0 ? 1 : -1, 0);
+          } else {
+            setDirection(0, dy > 0 ? 1 : -1);
+          }
+          if (gameState === 'idle' || gameState === 'over') startGame();
+        }
+        touchStart = null;
+      }, { passive: true });
+
+      // ── DIFFICULTY SELECTOR ──────────────────────────────────
+      difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          difficultyBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          tickMs = Number(btn.dataset.speed);
+          if (gameState === 'running') startLoop(); // apply immediately if mid-game
+        });
+      });
+
+      // Initialize tickMs from whichever button starts active
+      const initiallyActive = document.querySelector('.difficulty button.active');
+      if (initiallyActive) tickMs = Number(initiallyActive.dataset.speed);
+
+      // ── RESIZE HANDLING ──────────────────────────────────────
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeBoard, 120); // debounced
+      });
+
+      // ── BOOT ──────────────────────────────────────────────────
+      resizeBoard();
+      resetGame();
+      showStartScreen();
+
+      // Pause automatically if the tab loses focus, so players don't
+      // come back to an unexpected game-over from an unattended run.
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && gameState === 'running') {
+          togglePause();
+        }
+      });
+    })();
   </script>
 
 </body>
