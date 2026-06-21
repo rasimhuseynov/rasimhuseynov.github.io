@@ -49,6 +49,121 @@
     }
 
     /* ════════════════════════════════════════
+       INTRO SPLASH SCREEN — heart particle intro
+    ════════════════════════════════════════ */
+    #intro-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #160a26 0%, #07040d 60%, #020103 100%);
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+    #intro-splash.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #heartCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #sen-text {
+      position: relative;
+      z-index: 2;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.6rem, 9vw, 6.5rem);
+      letter-spacing: 0.01em;
+      color: #ff1f4b;
+      opacity: 0;
+      pointer-events: none;
+      text-shadow:
+        0 0 18px rgba(255, 31, 75, 0.85),
+        0 0 42px rgba(255, 31, 75, 0.55),
+        0 0 80px rgba(255, 31, 75, 0.3);
+      transition: opacity 1.1s ease;
+    }
+    #sen-text.show {
+      opacity: 1;
+      animation: senPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes senPulse {
+      0%, 100% {
+        transform: scale(1);
+        text-shadow:
+          0 0 18px rgba(255, 31, 75, 0.85),
+          0 0 42px rgba(255, 31, 75, 0.55),
+          0 0 80px rgba(255, 31, 75, 0.3);
+      }
+      50% {
+        transform: scale(1.1);
+        text-shadow:
+          0 0 30px rgba(255, 31, 75, 1),
+          0 0 70px rgba(255, 31, 75, 0.85),
+          0 0 120px rgba(255, 31, 75, 0.5);
+      }
+    }
+
+    #skip-intro {
+      position: absolute;
+      bottom: 2.25rem;
+      right: 2.25rem;
+      z-index: 3;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(6px);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    #skip-intro:hover {
+      border-color: #ff1f4b;
+      color: #ff1f4b;
+      transform: translateY(-2px);
+    }
+
+    .intro-hint {
+      position: absolute;
+      bottom: 2.4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(232, 244, 253, 0.35);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .intro-hint.show { opacity: 1; }
+
+    body.intro-active {
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #sen-text.show { animation: none; }
+    }
+
+    /* ════════════════════════════════════════
        AUTH MODAL (hidden by default — no page lock)
     ════════════════════════════════════════ */
     #login-gate {
@@ -660,6 +775,8 @@
       .t-line.output { white-space: pre-wrap; }
       .gate-socials { gap: 0.6rem; }
       .gate-btn { font-size: 0.82rem; padding: 0.7rem 1rem; }
+      #sen-text { font-size: clamp(2.2rem, 14vw, 4rem); }
+      #skip-intro { bottom: 1.25rem; right: 1.25rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -668,7 +785,19 @@
     }
   </style>
 </head>
-<body>
+<body class="intro-active">
+
+  <!-- ════════════════════════════════════════
+       INTRO SPLASH — particle heart made of
+       "Rrashad" text flying into formation,
+       with "Sən" pulsing at the center.
+  ════════════════════════════════════════ -->
+  <div id="intro-splash">
+    <canvas id="heartCanvas"></canvas>
+    <div id="sen-text">RASIM</div>
+    <div class="intro-hint" id="introHint">click anywhere to continue</div>
+    <button id="skip-intro" type="button">Skip ▸</button>
+  </div>
 
   <!-- ════════════════════════════════════════
        AUTH MODAL — hidden by default (display:none),
@@ -1175,9 +1304,208 @@
 
   <script>
     /* ════════════════════════════════════════════════════════════
+       INTRO SPLASH — CANVAS PARTICLE HEART
+       Thousands of tiny "Rrashad" labels fly in from random edges
+       and settle into a heart silhouette built from a parametric
+       heart curve. Once particles have mostly settled, "Sən"
+       fades in at the exact center with a glow + pulse animation.
+       Uses plain Canvas 2D — no external libraries — so it stays
+       lightweight and smooth even with a large particle count.
+    ════════════════════════════════════════════════════════════ */
+    (function () {
+      // Prevent the browser from restoring a previous scroll position
+      // (e.g. on refresh) so the intro and main content both start
+      // at the very top of the page.
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+
+      const splash   = document.getElementById('intro-splash');
+      const canvas   = document.getElementById('heartCanvas');
+      const ctx      = canvas.getContext('2d');
+      const senText  = document.getElementById('sen-text');
+      const skipBtn  = document.getElementById('skip-intro');
+      const hint     = document.getElementById('introHint');
+
+      let W, H, DPR;
+      function resize() {
+        DPR = Math.min(window.devicePixelRatio || 1, 2);
+        W = canvas.width  = Math.floor(window.innerWidth  * DPR);
+        H = canvas.height = Math.floor(window.innerHeight * DPR);
+        canvas.style.width  = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const LABEL = 'RASKA';
+
+      // Scale particle count to screen size / device for smooth perf,
+      // while still reading as "thousands" of tiny words on desktop.
+      const area = window.innerWidth * window.innerHeight;
+      const PARTICLE_COUNT = Math.max(400, Math.min(1200, Math.round(area / 1300)));
+
+      function heartCurve(t) {
+        // Classic parametric heart, t in [0, 2π)
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        return { x, y };
+      }
+
+      function buildParticles() {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2 - window.innerHeight * 0.03;
+        const baseScale = Math.min(window.innerWidth, window.innerHeight) / 34;
+
+        const particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          const t = Math.random() * Math.PI * 2;
+          // sqrt() biases fewer points near the center, more toward
+          // the outline — gives a denser, more "filled" heart look.
+          const fill = Math.sqrt(Math.random());
+          const pt = heartCurve(t);
+
+          const targetX = cx + pt.x * fill * baseScale;
+          const targetY = cy - pt.y * fill * baseScale;
+
+          // Start scattered just outside the viewport edges
+          const edge = Math.floor(Math.random() * 4);
+          let startX, startY;
+          const pad = 80;
+          if (edge === 0)      { startX = -pad; startY = Math.random() * window.innerHeight; }
+          else if (edge === 1) { startX = window.innerWidth + pad; startY = Math.random() * window.innerHeight; }
+          else if (edge === 2) { startX = Math.random() * window.innerWidth; startY = -pad; }
+          else                 { startX = Math.random() * window.innerWidth; startY = window.innerHeight + pad; }
+
+          const size = 7 + Math.random() * 6;
+          const sizeBucket = Math.round(size); // bucket so font changes less often
+          const hue = 340 + Math.random() * 25; // pink → red range
+          const baseAlpha = 0.55 + Math.random() * 0.45;
+
+          particles.push({
+            x: startX, y: startY,
+            startX, startY,
+            targetX, targetY,
+            delay: Math.random() * 900,
+            duration: 1100 + Math.random() * 700,
+            sizeBucket,
+            color: function (mult) {
+              const a = (baseAlpha * mult).toFixed(2);
+              return 'hsla(' + hue + ', 90%, 62%, ' + a + ')';
+            },
+            settled: false
+          });
+        }
+        return particles;
+      }
+
+      let particles = buildParticles();
+      window.addEventListener('resize', () => { particles = buildParticles(); });
+
+      function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
+
+      let startTime = null;
+      let allSettled = false;
+      let senShown = false;
+      let rafId = null;
+
+      function draw(now) {
+        if (startTime === null) startTime = now;
+        const elapsed = now - startTime;
+
+        ctx.save();
+        ctx.scale(DPR, DPR);
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        let settledCount = 0;
+
+        // No shadowBlur, no per-particle save/restore/rotate, no font
+        // re-set per particle — these were the main causes of dropped
+        // frames. Particles are grouped by size so the font is only
+        // set once per group, and color uses plain rgba (cheaper than
+        // hsla) for a faster fill path.
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowBlur = 0;
+
+        let currentSizeKey = null;
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const localT = elapsed - p.delay;
+          let progress = localT <= 0 ? 0 : Math.min(1, localT / p.duration);
+          const eased = easeOutCubic(progress);
+
+          p.x = p.startX + (p.targetX - p.startX) * eased;
+          p.y = p.startY + (p.targetY - p.startY) * eased;
+
+          if (progress >= 1) { p.settled = true; settledCount++; }
+
+          const sizeKey = p.sizeBucket;
+          if (sizeKey !== currentSizeKey) {
+            ctx.font = '600 ' + sizeKey + 'px "Space Grotesk", sans-serif';
+            currentSizeKey = sizeKey;
+          }
+
+          ctx.fillStyle = p.color(Math.max(progress, 0.15));
+          ctx.fillText(LABEL, p.x, p.y);
+        }
+
+        ctx.restore();
+
+        if (!allSettled && settledCount === particles.length) {
+          allSettled = true;
+        }
+
+        if (allSettled && !senShown) {
+          senShown = true;
+          senText.classList.add('show');
+          setTimeout(() => hint.classList.add('show'), 600);
+        }
+
+        rafId = requestAnimationFrame(draw);
+      }
+      rafId = requestAnimationFrame(draw);
+
+      function endIntro() {
+        if (rafId) cancelAnimationFrame(rafId);
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        splash.classList.add('fade-out');
+        document.body.classList.remove('intro-active');
+        window.scrollTo(0, 0);
+        setTimeout(() => { splash.style.display = 'none'; window.scrollTo(0, 0); }, 1050);
+      }
+
+      // Auto-advance once the heart has fully formed and "Sən" has pulsed
+      let autoTimer = setTimeout(endIntro, 6200);
+
+      function userSkip() {
+        clearTimeout(autoTimer);
+        endIntro();
+      }
+
+      skipBtn.addEventListener('click', userSkip);
+      splash.addEventListener('click', (e) => {
+        if (e.target === skipBtn) return;
+        userSkip();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (splash.style.display !== 'none' && (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape')) {
+          userSkip();
+        }
+      });
+    })();
+  </script>
+
+  <script>
+    /* ════════════════════════════════════════════════════════════
        PORTFOLIO INIT
        Runs immediately on DOMContentLoaded — the page is fully
-       visible and interactive without any auth step.
+       visible and interactive without any auth step (the intro
+       splash sits on top temporarily and does not block this).
     ════════════════════════════════════════════════════════════ */
     window.addEventListener('DOMContentLoaded', () => {
       // Hero typewriter
