@@ -9,83 +9,1324 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background:#0A0F1E; color:#E8F4FD; font-family:'Inter',sans-serif; }
+
+    :root {
+      --navy:    #0A0F1E;
+      --navy-2:  #111827;
+      --navy-3:  #1a2436;
+      --cyan:    #00D4FF;
+      --cyan-dim:#0099bb;
+      --white:   #E8F4FD;
+      --slate:   #4A6080;
+      --slate-lt:#8AAABE;
+      --amber:   #FFB347;
+      --card-bg: rgba(26, 36, 54, 0.7);
+      --border:  rgba(0, 212, 255, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--navy);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ════════════════════════════════════════
+       INTRO SPLASH SCREEN — heart particle intro
+    ════════════════════════════════════════ */
     #intro-splash {
-      position: fixed; inset: 0; z-index: 999999;
-      display: flex; align-items: center; justify-content: center;
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
       background: radial-gradient(ellipse at center, #160a26 0%, #07040d 60%, #020103 100%);
       transition: opacity 1s ease, visibility 1s ease;
     }
-    #intro-splash.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
-    #heartCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    #intro-splash.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #heartCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
     #sen-text {
-      position: relative; z-index: 2;
-      font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+      position: relative;
+      z-index: 2;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
       font-size: clamp(2.6rem, 9vw, 6.5rem);
-      color: #ff1f4b; opacity: 0; pointer-events: none;
-      text-shadow: 0 0 18px rgba(255,31,75,.85), 0 0 42px rgba(255,31,75,.55), 0 0 80px rgba(255,31,75,.3);
+      letter-spacing: 0.01em;
+      color: #ff1f4b;
+      opacity: 0;
+      pointer-events: none;
+      text-shadow:
+        0 0 18px rgba(255, 31, 75, 0.85),
+        0 0 42px rgba(255, 31, 75, 0.55),
+        0 0 80px rgba(255, 31, 75, 0.3);
       transition: opacity 1.1s ease;
     }
-    #sen-text.show { opacity: 1; animation: senPulse 1.6s ease-in-out infinite; }
+    #sen-text.show {
+      opacity: 1;
+      animation: senPulse 1.6s ease-in-out infinite;
+    }
     @keyframes senPulse {
-      0%,100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
+      0%, 100% {
+        transform: scale(1);
+        text-shadow:
+          0 0 18px rgba(255, 31, 75, 0.85),
+          0 0 42px rgba(255, 31, 75, 0.55),
+          0 0 80px rgba(255, 31, 75, 0.3);
+      }
+      50% {
+        transform: scale(1.1);
+        text-shadow:
+          0 0 30px rgba(255, 31, 75, 1),
+          0 0 70px rgba(255, 31, 75, 0.85),
+          0 0 120px rgba(255, 31, 75, 0.5);
+      }
     }
+
     #skip-intro {
-      position: absolute; bottom: 2.25rem; right: 2.25rem; z-index: 3;
-      padding: .6rem 1.4rem; border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.25);
-      background: rgba(255,255,255,.04); backdrop-filter: blur(6px);
-      color: #E8F4FD; font-family: 'Space Grotesk', sans-serif;
-      font-size: .78rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
-      cursor: pointer; transition: border-color .2s, color .2s, transform .2s;
+      position: absolute;
+      bottom: 2.25rem;
+      right: 2.25rem;
+      z-index: 3;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(6px);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
     }
-    #skip-intro:hover { border-color: #ff1f4b; color: #ff1f4b; transform: translateY(-2px); }
+    #skip-intro:hover {
+      border-color: #ff1f4b;
+      color: #ff1f4b;
+      transform: translateY(-2px);
+    }
+
     .intro-hint {
-      position: absolute; bottom: 2.4rem; left: 50%; transform: translateX(-50%); z-index: 3;
-      font-family: 'Space Mono', monospace; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
-      color: rgba(232,244,253,.35); opacity: 0; transition: opacity 1s ease;
+      position: absolute;
+      bottom: 2.4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(232, 244, 253, 0.35);
+      opacity: 0;
+      transition: opacity 1s ease;
     }
     .intro-hint.show { opacity: 1; }
-    body.intro-active { overflow: hidden; height: 100vh; }
-    @media (prefers-reduced-motion: reduce) { #sen-text.show { animation: none; } }
+
+    body.intro-active {
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #sen-text.show { animation: none; }
+    }
+
+    /* ════════════════════════════════════════
+       AUTH MODAL (hidden by default — no page lock)
+    ════════════════════════════════════════ */
+    #login-gate {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(10, 15, 30, 0.78);
+      backdrop-filter: blur(6px);
+    }
+
+    #login-gate.open {
+      display: flex;
+    }
+
+    /* Glow orbs behind the login card */
+    .gate-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .gate-orb-1 { width: 500px; height: 500px; background: var(--cyan);   top: -100px; right: -80px; }
+    .gate-orb-2 { width: 400px; height: 400px; background: #7C3AED; bottom: -80px; left: -60px; }
+
+    .gate-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 0 60px rgba(0,212,255,0.08), 0 24px 48px rgba(0,0,0,0.4);
+    }
+
+    /* ── Terminal header bar ── */
+    .gate-term-bar {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1.25rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border);
+      user-select: none;
+      position: relative;
+    }
+
+    .gate-dots { display: flex; gap: 0.45rem; }
+    .gate-dots span { display: block; width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #FF5F57; }
+    .dot-y { background: #FEBC2E; }
+    .dot-g { background: #28C840; }
+
+    .gate-term-title {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--slate-lt);
+      white-space: nowrap;
+    }
+
+    .gate-close {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--slate-lt);
+      font-size: 1.3rem;
+      line-height: 1;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .gate-close:hover { color: var(--cyan); background: rgba(0,212,255,0.08); }
+
+    /* ── Terminal-style message ── */
+    .gate-log {
+      padding: 1.25rem 1.5rem 0.75rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.7;
+      color: var(--slate-lt);
+    }
+
+    .gate-log .gl-cyan   { color: var(--cyan); }
+    .gate-log .gl-amber  { color: var(--amber); }
+    .gate-log .gl-green  { color: #4ade80; }
+    .gate-log .gl-red    { color: #f87171; }
+
+    /* ── Divider ── */
+    .gate-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0 1.5rem;
+      margin: 0.25rem 0 1rem;
+    }
+    .gate-divider::before,
+    .gate-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .gate-divider span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--slate);
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    /* ── Auth button ── */
+    .gate-socials {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .gate-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.8rem 1.25rem;
+      border-radius: 10px;
+      border: 1px solid;
+      background: transparent;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+      text-align: left;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gate-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+    .gate-btn:hover::before { opacity: 0.06; }
+    .gate-btn:hover { transform: translateY(-2px); }
+    .gate-btn:active { transform: translateY(0); }
+    .gate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .gate-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .gate-btn-label { flex: 1; }
+    .gate-btn-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
+    }
+
+    /* Google */
+    .gate-btn-google {
+      border-color: rgba(234,67,53,0.4);
+      color: #EA4335;
+      box-shadow: inset 0 0 0 1px rgba(234,67,53,0.1);
+    }
+    .gate-btn-google:hover { box-shadow: 0 0 18px rgba(234,67,53,0.25), inset 0 0 0 1px rgba(234,67,53,0.3); }
+
+    /* ── Access Granted overlay ── */
+    #access-granted {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,15,30,0.97);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      padding: 2rem;
+    }
+    #access-granted.show { display: flex; }
+
+    .ag-lines { width: 100%; }
+    .ag-line  {
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.3s, transform 0.3s;
+      margin-bottom: 0.3rem;
+    }
+    .ag-line.vis  { opacity: 1; transform: none; }
+    .ag-line.cyan  { color: var(--cyan); }
+    .ag-line.green { color: #4ade80; }
+    .ag-line.amber { color: var(--amber); }
+
+    .ag-bar-wrap {
+      margin: 1rem 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(0,212,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .ag-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), #7C3AED);
+      border-radius: 4px;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── Gate footer note ── */
+    .gate-note {
+      padding: 0.75rem 1.5rem 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--slate);
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 5vw;
+      background: rgba(10, 15, 30, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+    }
+    .nav-logo span { color: var(--white); }
+
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--slate-lt);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+
+    .nav-links a#openAuthBtn {
+      color: var(--cyan);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.95rem;
+      border-radius: 6px;
+    }
+    .nav-links a#openAuthBtn:hover { border-color: var(--cyan); }
+
+    .nav-links a#logoutBtn {
+      color: var(--slate-lt);
+      border: 1px solid transparent;
+    }
+    .nav-links a#logoutBtn:hover { color: var(--amber); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 5vw 5rem;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 32px; height: 1px;
+      background: var(--cyan);
+    }
+
+    .hero-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-name .first { color: var(--white); }
+    .hero-name .last  { color: var(--cyan); display: block; }
+
+    .hero-terminal {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      color: var(--slate-lt);
+      margin-bottom: 2.5rem;
+      min-height: 1.8em;
+    }
+    .hero-terminal .prompt { color: var(--cyan); margin-right: 0.5em; }
+    .hero-terminal .typed-text { color: var(--amber); }
+    .hero-terminal .cursor {
+      display: inline-block;
+      width: 2px; height: 1.1em;
+      background: var(--cyan);
+      vertical-align: text-bottom;
+      animation: blink 0.9s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-desc {
+      max-width: 560px;
+      color: var(--slate-lt);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      margin-bottom: 3rem;
+    }
+
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 1rem; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--cyan); color: var(--navy); }
+    .btn-primary:hover { background: #33dfff; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,212,255,0.35); }
+    .btn-ghost { background: transparent; color: var(--white); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
+
+    /* ── SOCIAL STRIP (hero) ── */
+    .social-strip {
+      position: absolute;
+      right: 5vw; top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+    }
+    .social-strip::after {
+      content: '';
+      display: block;
+      width: 1px; height: 80px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+      margin-top: 0.5rem;
+    }
+    .social-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--slate-lt);
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .social-icon:hover { color: var(--cyan); border-color: var(--cyan); transform: translateY(-3px); }
+    .social-icon svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* ── GLOW ORBS ── */
+    .orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(90px); opacity: 0.18; z-index: 0; }
+    .orb-1 { width: 480px; height: 480px; background: var(--cyan); top: -80px; right: 10vw; }
+    .orb-2 { width: 360px; height: 360px; background: #6A3FDE; bottom: 0; left: 5vw; }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 5vw;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 3rem;
+      color: var(--white);
+    }
+    .section-title em { font-style: normal; color: var(--cyan); }
+
+    /* ── ABOUT ── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .about-text p { color: var(--slate-lt); margin-bottom: 1.25rem; font-size: 1rem; }
+    .about-text p strong { color: var(--white); font-weight: 600; }
+    .about-cards { display: flex; flex-direction: column; gap: 1rem; }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stat-card:hover { border-color: rgba(0,212,255,0.4); transform: translateX(4px); }
+    .stat-card-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .stat-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
+    .stat-card-sub { font-size: 0.85rem; color: var(--slate-lt); }
+
+    /* ── ROADMAP ── */
+    .roadmap { background: var(--navy-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.5rem; bottom: 0.5rem;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--cyan), rgba(0,212,255,0.1));
+    }
+    .timeline-item { position: relative; padding: 0 0 2.5rem 2.5rem; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -0.45rem; top: 0.4rem;
+      width: 0.85rem; height: 0.85rem;
+      border-radius: 50%;
+      background: var(--navy);
+      border: 2px solid var(--cyan);
+      transition: background 0.2s;
+    }
+    .timeline-item:hover::before { background: var(--cyan); }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-year { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--amber); letter-spacing: 0.12em; margin-bottom: 0.35rem; }
+    .timeline-heading { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+    .timeline-body { font-size: 0.9rem; color: var(--slate-lt); max-width: 520px; }
+
+    /* ── SKILLS ── */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    .skill-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 0.9rem; font-weight: 500; color: var(--white);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .skill-pill:hover { border-color: rgba(0,212,255,0.45); transform: translateY(-3px); }
+    .skill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
+    .skill-dot.amber  { background: var(--amber); }
+    .skill-dot.purple { background: #A78BFA; }
+
+    /* ── CONNECT ── */
+    .connect { text-align: center; }
+    .connect .section-label, .connect .section-title { text-align: center; }
+    .connect-desc { max-width: 520px; margin: 0 auto 3rem; color: var(--slate-lt); }
+    .connect-cards { display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; }
+    .connect-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem 2.5rem;
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+      min-width: 200px;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .connect-card:hover { border-color: var(--cyan); transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,212,255,0.12); }
+    .connect-card svg { width: 32px; height: 32px; fill: var(--cyan); }
+    .connect-card-label { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--white); }
+    .connect-card-handle { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--slate-lt); }
+
+    /* ── TERMINAL SIMULATOR ── */
+    #terminal-section { padding: 6rem 5vw; position: relative; z-index: 1; }
+
+    .terminal-wrap {
+      max-width: 860px; margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 40px rgba(0,212,255,0.07);
+    }
+
+    .terminal-header {
+      display: flex; align-items: center;
+      padding: 0.75rem 1.25rem;
+      background: rgba(10,15,30,0.9);
+      border-bottom: 1px solid var(--border);
+      user-select: none; position: relative;
+    }
+    .terminal-dots { display: flex; gap: 0.45rem; margin-right: auto; }
+    .terminal-dots span { display: block; width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #FF5F57; }
+    .dot-yellow { background: #FEBC2E; }
+    .dot-green  { background: #28C840; }
+    .terminal-title {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--slate-lt);
+      pointer-events: none;
+    }
+
+    .terminal-body {
+      padding: 1.25rem 1.5rem;
+      min-height: 320px; max-height: 420px;
+      overflow-y: auto; cursor: text;
+      font-family: 'Space Mono', monospace; font-size: 0.82rem; line-height: 1.65;
+    }
+    .terminal-body::-webkit-scrollbar { width: 4px; }
+    .terminal-body::-webkit-scrollbar-track { background: transparent; }
+    .terminal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .t-line            { margin-bottom: 0.15rem; word-break: break-word; }
+    .t-line.welcome    { color: var(--cyan); }
+    .t-line.output     { color: #a0c4d8; white-space: pre; }
+    .t-line.cmd        { color: var(--white); }
+    .t-line.error      { color: #f87171; }
+    .t-line.easter     { color: var(--amber); }
+    .t-line.blank      { min-height: 1em; }
+
+    .terminal-input-row {
+      display: flex; align-items: center;
+      padding: 0.6rem 1.5rem 1rem; gap: 0.5rem;
+      border-top: 1px solid rgba(0,212,255,0.08);
+    }
+    .t-prompt { font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--cyan); white-space: nowrap; flex-shrink: 0; }
+    #t-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      font-family: 'Space Mono', monospace; font-size: 0.82rem;
+      color: var(--white); caret-color: var(--cyan); min-width: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1; text-align: center;
+      padding: 2.5rem 5vw;
+      border-top: 1px solid var(--border);
+      font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--slate);
+    }
+    footer span { color: var(--cyan); }
+    footer a { color: var(--slate-lt); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--cyan); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .social-strip { display: none; }
+      .gate-card { max-width: 100%; }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { gap: 1rem; }
+      .nav-links a:not(#openAuthBtn):not(#logoutBtn) { display: none; }
+      .hero { padding-top: 7rem; }
+      .connect-card { min-width: 160px; padding: 1.5rem; }
+      #terminal-section { padding: 4rem 4vw; }
+      .terminal-body { font-size: 0.75rem; max-height: 340px; padding: 1rem; }
+      .terminal-input-row { padding: 0.5rem 1rem 0.85rem; }
+      .t-prompt, #t-input { font-size: 0.75rem; }
+      .t-line.output { white-space: pre-wrap; }
+      .gate-socials { gap: 0.6rem; }
+      .gate-btn { font-size: 0.82rem; padding: 0.7rem 1rem; }
+      #sen-text { font-size: clamp(2.2rem, 14vw, 4rem); }
+      #skip-intro { bottom: 1.25rem; right: 1.25rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { transition: none; opacity: 1; transform: none; }
+      .cursor { animation: none; }
+    }
   </style>
 </head>
 <body class="intro-active">
 
+  <!-- ════════════════════════════════════════
+       INTRO SPLASH — particle heart made of
+       "Rrashad" text flying into formation,
+       with "Sən" pulsing at the center.
+  ════════════════════════════════════════ -->
   <div id="intro-splash">
     <canvas id="heartCanvas"></canvas>
     <div id="sen-text">RASIM</div>
-    <div class="intro-hint" id="introHint">move your mouse · click to continue</div>
+    <div class="intro-hint" id="introHint">click anywhere to continue</div>
     <button id="skip-intro" type="button">Skip ▸</button>
   </div>
 
+  <!-- ════════════════════════════════════════
+       AUTH MODAL — hidden by default (display:none),
+       opened only when #openAuthBtn is clicked.
+       Page content below is fully visible without it.
+  ════════════════════════════════════════ -->
+  <div id="login-gate" role="dialog" aria-modal="true" aria-label="Sign in">
+    <div class="gate-orb gate-orb-1"></div>
+    <div class="gate-orb gate-orb-2"></div>
+
+    <div class="gate-card">
+
+      <!-- Terminal title bar -->
+      <div class="gate-term-bar">
+        <div class="gate-dots">
+          <span class="dot-r"></span>
+          <span class="dot-y"></span>
+          <span class="dot-g"></span>
+        </div>
+        <div class="gate-term-title">rasim@portfolio:~ — sign in</div>
+        <button class="gate-close" id="closeAuthBtn" type="button" aria-label="Close sign-in dialog">&times;</button>
+      </div>
+
+      <!-- Message -->
+      <div class="gate-log" id="gateLog">
+        <div class="gl-cyan">RasimOS v1.0.0 — sign-in module</div>
+        <div>Sign in to sync your session across tabs.</div>
+        <div class="gl-amber">Awaiting credentials...</div>
+      </div>
+
+      <!-- Auth divider -->
+      <div class="gate-divider"><span>// SIGN IN WITH</span></div>
+
+      <!-- Google sign-in — listener attached in JS, fires only on click -->
+      <div class="gate-socials">
+        <button class="gate-btn gate-btn-google" id="btn-google" type="button">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span class="gate-btn-label">Sign in with Gmail (Google)</span>
+          <span class="gate-btn-tag">OAUTH2</span>
+        </button>
+      </div><!-- /gate-socials -->
+
+      <!-- Access Granted overlay (shown after successful sign-in) -->
+      <div id="access-granted">
+        <div class="ag-lines" id="agLines"></div>
+        <div class="ag-bar-wrap"><div class="ag-bar" id="agBar"></div></div>
+      </div>
+
+      <div class="gate-note">
+        Secured via Firebase Authentication &nbsp;·&nbsp;
+        No data is stored without your consent.
+      </div>
+
+    </div><!-- /gate-card -->
+  </div><!-- /login-gate -->
+
+
+  <!-- ════════════════════════════════════════
+       PORTFOLIO CONTENT — visible by default,
+       no gate, no JS unlock required.
+  ════════════════════════════════════════ -->
   <div id="portfolio-content">
-    <!-- rest of your existing portfolio markup stays exactly as-is -->
-  </div>
+
+    <!-- NAV -->
+    <nav>
+      <div class="nav-logo">RH<span>.dev</span></div>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#terminal-section">Terminal</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#connect">Connect</a></li>
+        <li><a href="#" id="openAuthBtn">Sign In</a></li>
+        <li><a href="#" id="logoutBtn">Log Out</a></li>
+      </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+
+      <div class="hero-eyebrow">CS Student &amp; Future Builder</div>
+
+      <h1 class="hero-name">
+        <span class="first">Rasim</span>
+        <span class="last">Huseynov</span>
+      </h1>
+
+      <div class="hero-terminal">
+        <span class="prompt">$</span>
+        <span class="typed-text" id="typed"></span><span class="cursor"></span>
+      </div>
+
+      <p class="hero-desc">
+        Aspiring Computer Science student at Baku Engineering University — building toward
+        a global tech career rooted in curiosity, discipline, and a drive to create
+        things that actually matter.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#about" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7-7 7-7-7"/></svg>
+          Explore my story
+        </a>
+        <a href="#connect" class="btn btn-ghost">Get in touch</a>
+      </div>
+
+      <div class="social-strip">
+        <a href="https://www.linkedin.com/in/rasim-huseynov-89469b40a" target="_blank" rel="noopener" class="social-icon" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://github.com/rasimhuseynov" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="section-label">01 — About</div>
+      <h2 class="section-title">Code, ambition &amp;<br><em>a clear destination.</em></h2>
+
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            I'm <strong>Rasim Huseynov</strong>, a driven young technologist from Azerbaijan with
+            my sights set on studying <strong>Computer Science at Baku Engineering University (BEU)</strong>.
+            BEU's reputation for rigorous, practice-first engineering education makes it the ideal
+            launchpad for what I have in mind.
+          </p>
+          <p>
+            But my vision stretches further. After building a solid foundation at BEU, I plan
+            to pursue advanced studies in <strong>Estonia</strong> — one of Europe's most
+            digitally advanced nations and a beacon for tech-first thinking. Estonia's
+            e-governance model and vibrant startup ecosystem represent exactly the kind of
+            environment where I want to sharpen my craft.
+          </p>
+          <p>
+            Ultimately, my goal is a <strong>global tech career</strong> rooted in creating
+            software that solves real, meaningful problems — systems that improve lives,
+            streamline societies, and push what's technically possible just a little bit further.
+          </p>
+        </div>
+
+        <div class="about-cards reveal">
+          <div class="stat-card">
+            <div class="stat-card-icon">🎓</div>
+            <div class="stat-card-title">Target: Baku Engineering University</div>
+            <div class="stat-card-sub">BSc Computer Science — first milestone of many</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">🌍</div>
+            <div class="stat-card-title">Next horizon: Estonia</div>
+            <div class="stat-card-sub">Graduate study in Europe's digital capital</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">⚡</div>
+            <div class="stat-card-title">Mission: Impactful Projects</div>
+            <div class="stat-card-sub">Software that moves the needle on real-world problems</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">🇦🇿</div>
+            <div class="stat-card-title">Based in Azerbaijan</div>
+            <div class="stat-card-sub">Baku → Tallinn → The world</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TERMINAL SIMULATOR -->
+    <section id="terminal-section">
+      <div class="section-label">01.5 — Interactive</div>
+      <h2 class="section-title" style="margin-bottom:2rem;">Try the <em>terminal.</em></h2>
+
+      <div class="terminal-wrap reveal" id="terminalWrap">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+          </div>
+          <div class="terminal-title">rasim@portfolio:~</div>
+        </div>
+        <div class="terminal-body" id="terminalBody">
+          <div class="t-line welcome">Welcome to Rasim OS Terminal v1.0.0. Type "help" to see available commands.</div>
+        </div>
+        <div class="terminal-input-row">
+          <span class="t-prompt">rasim@portfolio:~$&nbsp;</span>
+          <input type="text" id="t-input" autocomplete="off" autocorrect="off"
+                 autocapitalize="off" spellcheck="false" aria-label="Terminal input" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="roadmap" id="roadmap">
+      <div class="section-label">02 — Roadmap</div>
+      <h2 class="section-title">Where I'm going &amp;<br><em>how I'll get there.</em></h2>
+
+      <div class="timeline reveal">
+        <div class="timeline-item">
+          <div class="timeline-year">NOW</div>
+          <div class="timeline-heading">Laying the groundwork</div>
+          <div class="timeline-body">
+            Sharpening core CS fundamentals — algorithms, data structures, mathematics —
+            and building personal projects that push my skills beyond the classroom.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">NEXT</div>
+          <div class="timeline-heading">BSc at Baku Engineering University</div>
+          <div class="timeline-body">
+            Enrolling in BEU's Computer Science programme — academic rigour, hands-on
+            engineering labs, and a network of future-focused peers in Azerbaijan's
+            premier tech institution.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">FUTURE</div>
+          <div class="timeline-heading">Graduate studies in Estonia</div>
+          <div class="timeline-body">
+            Taking my education to Europe — deepening expertise in areas like distributed
+            systems, AI, or cybersecurity within Estonia's uniquely digital-first society.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">VISION</div>
+          <div class="timeline-heading">Global tech career &amp; meaningful impact</div>
+          <div class="timeline-body">
+            Working on products and systems that serve millions — contributing to open
+            source, leading engineering teams, and building technology that creates
+            genuine, lasting value for people.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="section-label">03 — Skills &amp; Interests</div>
+      <h2 class="section-title">What I'm <em>building with.</em></h2>
+
+      <div class="skills-grid reveal">
+        <div class="skill-pill"><span class="skill-dot"></span>Python</div>
+        <div class="skill-pill"><span class="skill-dot"></span>JavaScript</div>
+        <div class="skill-pill"><span class="skill-dot"></span>HTML &amp; CSS</div>
+        <div class="skill-pill"><span class="skill-dot amber"></span>Algorithms</div>
+        <div class="skill-pill"><span class="skill-dot amber"></span>Data Structures</div>
+        <div class="skill-pill"><span class="skill-dot amber"></span>Git &amp; GitHub</div>
+        <div class="skill-pill"><span class="skill-dot purple"></span>Problem Solving</div>
+        <div class="skill-pill"><span class="skill-dot purple"></span>Linux Basics</div>
+        <div class="skill-pill"><span class="skill-dot purple"></span>Databases (SQL)</div>
+        <div class="skill-pill"><span class="skill-dot"></span>Web Development</div>
+      </div>
+    </section>
+
+    <!-- CONNECT -->
+    <section id="connect" class="connect">
+      <div class="section-label">04 — Connect</div>
+      <h2 class="section-title">Let's build something<br><em>worth building.</em></h2>
+      <p class="connect-desc reveal">
+        I'm always open to connecting with fellow students, engineers, and anyone who
+        cares about technology done right. Find me on LinkedIn or explore my work on GitHub.
+      </p>
+
+      <div class="connect-cards reveal">
+        <a href="https://www.linkedin.com/in/rasim-huseynov-89469b40a" target="_blank" rel="noopener" class="connect-card">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          <div class="connect-card-label">LinkedIn</div>
+          <div class="connect-card-handle">rasim-huseynov</div>
+        </a>
+        <a href="https://github.com/rasimhuseynov" target="_blank" rel="noopener" class="connect-card">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          <div class="connect-card-label">GitHub</div>
+          <div class="connect-card-handle">rasimhuseynov</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <span>Rasim Huseynov</span> — Built with curiosity &amp; intent · Baku, Azerbaijan · 2025
+      &nbsp;·&nbsp; <a href="/privacy-policy.html">Privacy Policy</a>
+    </footer>
+
+  </div><!-- /portfolio-content -->
+
+
+  <!-- ════════════════════════════════════════
+       SCRIPTS
+  ════════════════════════════════════════ -->
+
+  <!-- Firebase SDK compat bundles -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script>
+    /* ════════════════════════════════════════════════════════════
+       FIREBASE CONFIGURATION — your live config values, preserved.
+       If you see auth/api-key-not-valid or auth/unauthorized-domain:
+       1. Firebase Console → Authentication → Settings →
+          Authorized Domains → add your domain
+       2. Google Cloud Console → APIs & Services → Credentials →
+          Browser Key → Application Restrictions →
+          add your domain as an allowed referrer
+       3. If the key was exposed publicly, regenerate it and
+          paste the new value here.
+    ════════════════════════════════════════════════════════════ */
+    const firebaseConfig = {
+      apiKey:            "AIzaSyAXh-IdL2GpoaKZUyXO53tfz8phh_UrMIk",
+      authDomain:        "rasim-auth-27fe8.firebaseapp.com",
+      projectId:         "rasim-auth-27fe8",
+      storageBucket:     "rasim-auth-27fe8.firebasestorage.app",
+      messagingSenderId: "514793748377",
+      appId:             "1:514793748377:web:2b3d7637190d66bd8d0508",
+      measurementId:     "G-S2PKQ27P3H"
+    };
+
+    // Initialise Firebase (guard against double-init on hot reload)
+    const firebaseApp = firebase.apps.length
+      ? firebase.app()
+      : firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    auth.useDeviceLanguage();
+
+    // Single provider — Google only
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+  </script>
+
+  <script>
+    /* ════════════════════════════════════════════════════════════
+       AUTH MODAL + SESSION STATE
+       - The modal is display:none by default (see CSS) and is
+         only shown when #openAuthBtn is clicked.
+       - No auth function runs automatically on page load other
+         than registering the onAuthStateChanged listener, which
+         just reads existing session state — it never opens the
+         modal or triggers a sign-in popup by itself.
+    ════════════════════════════════════════════════════════════ */
+    window.addEventListener('DOMContentLoaded', () => {
+      const loginGate = document.getElementById('login-gate');
+      const openBtn   = document.getElementById('openAuthBtn');
+      const closeBtn  = document.getElementById('closeAuthBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const googleBtn = document.getElementById('btn-google');
+      const overlay   = document.getElementById('access-granted');
+      const linesEl   = document.getElementById('agLines');
+      const bar       = document.getElementById('agBar');
+
+      function resetModalState() {
+        overlay.classList.remove('show');
+        linesEl.innerHTML = '';
+        bar.style.width = '0%';
+        document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
+      }
+
+      function openModal(e) {
+        if (e) e.preventDefault();
+        resetModalState();
+        loginGate.classList.add('open');
+      }
+
+      function closeModal() {
+        loginGate.classList.remove('open');
+        resetModalState();
+      }
+
+      // Open modal — only fires on explicit click
+      openBtn.addEventListener('click', openModal);
+
+      // Close modal — explicit close button
+      closeBtn.addEventListener('click', closeModal);
+
+      // Close modal — click on backdrop (outside the card)
+      loginGate.addEventListener('click', (e) => {
+        if (e.target === loginGate) closeModal();
+      });
+
+      // Close modal — Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && loginGate.classList.contains('open')) closeModal();
+      });
+
+      // Google sign-in — only fires on explicit click
+      googleBtn.addEventListener('click', function () {
+        handleGoogleSignIn();
+      });
+
+      // Log out — only fires on explicit click
+      logoutBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        auth.signOut();
+      });
+
+      /* ──────────────────────────────────────────────────────────
+         SESSION STATE
+         Fires once on load with the current state (no popups,
+         no modal), then again whenever auth state changes —
+         including changes made in other tabs.
+      ────────────────────────────────────────────────────────── */
+      // Default state while Firebase determines whether a session exists
+      openBtn.style.display   = 'inline-block';
+      logoutBtn.style.display = 'none';
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          openBtn.style.display   = 'none';
+          logoutBtn.style.display = 'inline-block';
+        } else {
+          openBtn.style.display   = 'inline-block';
+          logoutBtn.style.display = 'none';
+        }
+      });
+    });
+
+    /* ════════════════════════════════════════════════════════════
+       GOOGLE SIGN-IN HANDLER
+       Called only from the click listener above.
+    ════════════════════════════════════════════════════════════ */
+    function handleGoogleSignIn() {
+      document.querySelectorAll('.gate-btn').forEach(b => b.disabled = true);
+
+      auth.signInWithPopup(googleProvider)
+        .then(() => {
+          runAccessGranted();
+        })
+        .catch(error => {
+          const log = document.getElementById('gateLog');
+          const e = document.createElement('div');
+          e.className = 'gl-red';
+
+          // Translate common Firebase error codes into plain instructions
+          const hints = {
+            'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
+              '[ERR] API key rejected. Steps: (1) Add your domain to Firebase Auth → Authorized Domains. (2) In Google Cloud Console → Credentials, restrict the Browser Key to your domain. (3) If key was exposed publicly, regenerate it.',
+            'auth/unauthorized-domain':
+              '[ERR] Domain not authorised. Go to Firebase Console → Authentication → Settings → Authorized Domains and add your domain.',
+            'auth/popup-blocked':
+              '[ERR] Popup was blocked by the browser. Allow popups for this site and try again.',
+            'auth/popup-closed-by-user':
+              '[ERR] Sign-in popup was closed before completing. Please try again.',
+            'auth/cancelled-popup-request':
+              '[ERR] Only one popup can be open at a time. Please try again.',
+            'auth/account-exists-with-different-credential':
+              '[ERR] An account already exists with this email under a different provider.',
+          };
+
+          e.textContent = hints[error.code] || ('[ERR] ' + error.message);
+          log.appendChild(e);
+          log.scrollTop = log.scrollHeight;
+          document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
+        });
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       ACCESS GRANTED SEQUENCE
+       Short success animation, then auto-closes the modal.
+       The onAuthStateChanged listener (above) handles swapping
+       the Sign In / Log Out links once Firebase confirms the
+       session — this is purely visual feedback.
+    ════════════════════════════════════════════════════════════ */
+    function runAccessGranted() {
+      const overlay = document.getElementById('access-granted');
+      const linesEl = document.getElementById('agLines');
+      const bar     = document.getElementById('agBar');
+
+      overlay.classList.add('show');
+
+      const lines = [
+        { text: '[AUTH]  Provider handshake: GOOGLE',  cls: 'ag-line cyan',  t: 0   },
+        { text: '[AUTH]  Token verified ✓',             cls: 'ag-line green', t: 350 },
+        { text: '[SYS]   Session established.',         cls: 'ag-line amber', t: 650 },
+        { text: '▓▓▓▓▓▓▓▓▓▓  WELCOME BACK  ▓▓▓▓▓▓▓▓▓▓', cls: 'ag-line green', t: 950 },
+      ];
+
+      lines.forEach(({ text, cls, t }) => {
+        setTimeout(() => {
+          const d = document.createElement('div');
+          d.className = cls;
+          d.textContent = text;
+          linesEl.appendChild(d);
+          requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('vis')));
+        }, t);
+      });
+
+      setTimeout(() => { bar.style.width = '100%'; }, 400);
+
+      setTimeout(() => {
+        document.getElementById('login-gate').classList.remove('open');
+        overlay.classList.remove('show');
+        linesEl.innerHTML = '';
+        bar.style.width = '0%';
+        document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
+      }, 1800);
+    }
+  </script>
 
   <script>
     /* ════════════════════════════════════════════════════════════
        INTRO SPLASH — CANVAS PARTICLE HEART
-       - Particles fly in from the edges and settle into a heart.
-       - Once mostly settled, "RASIM" pulses at the center.
-       - NEW: particles repel from the mouse cursor and smoothly
-         spring back to their heart position when the cursor moves
-         away.
-       - NEW: no auto-skip timer — the user controls when to leave
-         via the Skip button, click, or a key press.
+       Thousands of tiny "Rrashad" labels fly in from random edges
+       and settle into a heart silhouette built from a parametric
+       heart curve. Once particles have mostly settled, "Sən"
+       fades in at the exact center with a glow + pulse animation.
+       Uses plain Canvas 2D — no external libraries — so it stays
+       lightweight and smooth even with a large particle count.
     ════════════════════════════════════════════════════════════ */
     (function () {
-      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      // Prevent the browser from restoring a previous scroll position
+      // (e.g. on refresh) so the intro and main content both start
+      // at the very top of the page.
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
       window.scrollTo(0, 0);
 
-      const splash  = document.getElementById('intro-splash');
-      const canvas  = document.getElementById('heartCanvas');
-      const ctx     = canvas.getContext('2d');
-      const senText = document.getElementById('sen-text');
-      const skipBtn = document.getElementById('skip-intro');
-      const hint    = document.getElementById('introHint');
+      const splash   = document.getElementById('intro-splash');
+      const canvas   = document.getElementById('heartCanvas');
+      const ctx      = canvas.getContext('2d');
+      const senText  = document.getElementById('sen-text');
+      const skipBtn  = document.getElementById('skip-intro');
+      const hint     = document.getElementById('introHint');
 
       let W, H, DPR;
       function resize() {
@@ -96,14 +1337,17 @@
         canvas.style.height = window.innerHeight + 'px';
       }
       resize();
-      window.addEventListener('resize', () => { resize(); particles = buildParticles(); });
+      window.addEventListener('resize', resize);
 
       const LABEL = 'RASKA';
 
+      // Scale particle count to screen size / device for smooth perf,
+      // while still reading as "thousands" of tiny words on desktop.
       const area = window.innerWidth * window.innerHeight;
       const PARTICLE_COUNT = Math.max(400, Math.min(1200, Math.round(area / 1300)));
 
       function heartCurve(t) {
+        // Classic parametric heart, t in [0, 2π)
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
         return { x, y };
@@ -114,15 +1358,18 @@
         const cy = window.innerHeight / 2 - window.innerHeight * 0.03;
         const baseScale = Math.min(window.innerWidth, window.innerHeight) / 34;
 
-        const list = [];
+        const particles = [];
         for (let i = 0; i < PARTICLE_COUNT; i++) {
           const t = Math.random() * Math.PI * 2;
+          // sqrt() biases fewer points near the center, more toward
+          // the outline — gives a denser, more "filled" heart look.
           const fill = Math.sqrt(Math.random());
           const pt = heartCurve(t);
 
           const targetX = cx + pt.x * fill * baseScale;
           const targetY = cy - pt.y * fill * baseScale;
 
+          // Start scattered just outside the viewport edges
           const edge = Math.floor(Math.random() * 4);
           let startX, startY;
           const pad = 80;
@@ -132,20 +1379,14 @@
           else                 { startX = Math.random() * window.innerWidth; startY = window.innerHeight + pad; }
 
           const size = 7 + Math.random() * 6;
-          const sizeBucket = Math.round(size);
-          const hue = 340 + Math.random() * 25;
+          const sizeBucket = Math.round(size); // bucket so font changes less often
+          const hue = 340 + Math.random() * 25; // pink → red range
           const baseAlpha = 0.55 + Math.random() * 0.45;
 
-          list.push({
+          particles.push({
             x: startX, y: startY,
             startX, startY,
             targetX, targetY,
-            // current "home" position the particle springs back to once the
-            // intro entrance has finished — same as targetX/Y but kept
-            // separate so the entrance animation logic doesn't need to change.
-            homeX: targetX, homeY: targetY,
-            // mouse-repel offset, applied on top of the eased entrance position
-            offX: 0, offY: 0,
             delay: Math.random() * 900,
             duration: 1100 + Math.random() * 700,
             sizeBucket,
@@ -156,31 +1397,13 @@
             settled: false
           });
         }
-        return list;
+        return particles;
       }
 
       let particles = buildParticles();
+      window.addEventListener('resize', () => { particles = buildParticles(); });
 
       function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
-
-      /* ── Mouse tracking for the repel effect ── */
-      const mouse = { x: -9999, y: -9999, active: false };
-      const REPEL_RADIUS = 130;     // px within which particles flee
-      const REPEL_STRENGTH = 55;    // max push distance at the cursor center
-      const SPRING = 0.12;          // how quickly offset eases toward target push
-      const RETURN_SPRING = 0.10;   // how quickly offset eases back to 0 when idle
-
-      function updatePointer(clientX, clientY) {
-        mouse.x = clientX;
-        mouse.y = clientY;
-        mouse.active = true;
-      }
-      canvas.addEventListener('mousemove', (e) => updatePointer(e.clientX, e.clientY));
-      canvas.addEventListener('mouseleave', () => { mouse.active = false; });
-      canvas.addEventListener('touchmove', (e) => {
-        if (e.touches && e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
-      }, { passive: true });
-      canvas.addEventListener('touchend', () => { mouse.active = false; });
 
       let startTime = null;
       let allSettled = false;
@@ -197,6 +1420,11 @@
 
         let settledCount = 0;
 
+        // No shadowBlur, no per-particle save/restore/rotate, no font
+        // re-set per particle — these were the main causes of dropped
+        // frames. Particles are grouped by size so the font is only
+        // set once per group, and color uses plain rgba (cheaper than
+        // hsla) for a faster fill path.
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.shadowBlur = 0;
@@ -209,41 +1437,10 @@
           let progress = localT <= 0 ? 0 : Math.min(1, localT / p.duration);
           const eased = easeOutCubic(progress);
 
-          // Base entrance position (unaffected by the mouse)
-          const baseX = p.startX + (p.homeX - p.startX) * eased;
-          const baseY = p.startY + (p.homeY - p.startY) * eased;
+          p.x = p.startX + (p.targetX - p.startX) * eased;
+          p.y = p.startY + (p.targetY - p.startY) * eased;
 
           if (progress >= 1) { p.settled = true; settledCount++; }
-
-          // ── Mouse repel: compute desired offset, then spring toward it ──
-          let desiredOffX = 0;
-          let desiredOffY = 0;
-
-          if (mouse.active) {
-            const dx = baseX - mouse.x;
-            const dy = baseY - mouse.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < REPEL_RADIUS && dist > 0.001) {
-              const falloff = 1 - dist / REPEL_RADIUS; // 1 at cursor, 0 at edge
-              const push = falloff * falloff * REPEL_STRENGTH;
-              desiredOffX = (dx / dist) * push;
-              desiredOffY = (dy / dist) * push;
-            }
-          }
-
-          // Spring the current offset toward the desired offset — fast when
-          // fleeing, slightly slower (but still snappy) when returning home.
-          const k = (desiredOffX === 0 && desiredOffY === 0) ? RETURN_SPRING : SPRING;
-          p.offX += (desiredOffX - p.offX) * k;
-          p.offY += (desiredOffY - p.offY) * k;
-
-          // Snap tiny residual offsets to exactly 0 so particles fully
-          // settle back into the heart shape instead of drifting forever.
-          if (Math.abs(p.offX) < 0.05) p.offX = 0;
-          if (Math.abs(p.offY) < 0.05) p.offY = 0;
-
-          p.x = baseX + p.offX;
-          p.y = baseY + p.offY;
 
           const sizeKey = p.sizeBucket;
           if (sizeKey !== currentSizeKey) {
@@ -282,16 +1479,15 @@
         setTimeout(() => { splash.style.display = 'none'; window.scrollTo(0, 0); }, 1050);
       }
 
-      // NOTE: no auto-advance timer — the intro now stays on screen until
-      // the user explicitly leaves via Skip, a click, or a key press.
+      // Auto-advance once the heart has fully formed and "Sən" has pulsed
+      let autoTimer = setTimeout(endIntro, 6200);
+
       function userSkip() {
+        clearTimeout(autoTimer);
         endIntro();
       }
 
-      skipBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userSkip();
-      });
+      skipBtn.addEventListener('click', userSkip);
       splash.addEventListener('click', (e) => {
         if (e.target === skipBtn) return;
         userSkip();
@@ -302,6 +1498,160 @@
         }
       });
     })();
+  </script>
+
+  <script>
+    /* ════════════════════════════════════════════════════════════
+       PORTFOLIO INIT
+       Runs immediately on DOMContentLoaded — the page is fully
+       visible and interactive without any auth step (the intro
+       splash sits on top temporarily and does not block this).
+    ════════════════════════════════════════════════════════════ */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Hero typewriter
+      const phrases = [
+        'buildFuture("BEU → Estonia → World");',
+        'learn(algorithms, systems, creativity);',
+        'git commit -m "another step forward"',
+        'dream.setGoal("global tech impact");',
+      ];
+      let pi = 0, ci = 0, deleting = false;
+      const typedEl = document.getElementById('typed');
+
+      function type() {
+        const current = phrases[pi];
+        if (!deleting) {
+          typedEl.textContent = current.slice(0, ++ci);
+          if (ci === current.length) { deleting = true; setTimeout(type, 1800); return; }
+        } else {
+          typedEl.textContent = current.slice(0, --ci);
+          if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+        }
+        setTimeout(type, deleting ? 32 : 58);
+      }
+      type();
+
+      // Scroll reveal
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // Terminal simulator
+      initTerminal();
+    });
+
+    /* ════════════════════════════════════════════════════════════
+       LINUX TERMINAL SIMULATOR
+    ════════════════════════════════════════════════════════════ */
+    function initTerminal() {
+      const body  = document.getElementById('terminalBody');
+      const input = document.getElementById('t-input');
+      const wrap  = document.getElementById('terminalWrap');
+      if (!body || !input) return;
+
+      wrap.addEventListener('click', () => input.focus());
+
+      function print(text, cls) {
+        const d = document.createElement('div');
+        d.className = 't-line ' + (cls || '');
+        d.textContent = text;
+        body.appendChild(d);
+      }
+
+      function blank() { print('', 'blank'); }
+      function scrollBottom() { body.scrollTop = body.scrollHeight; }
+
+      const COMMANDS = {
+        help() {
+          blank();
+          print('Available commands:', 'output');
+          print('  help    — show this list',       'output');
+          print('  about   — who is Rasim?',        'output');
+          print('  skills  — tech stack overview',  'output');
+          print('  clear   — clear the terminal',   'output');
+          print('  sudo    — nice try ;)',           'output');
+          blank();
+        },
+        clear() { body.innerHTML = ''; },
+        about() {
+          blank();
+          print('┌─────────────────────────────────────────┐', 'output');
+          print('│           RASIM HUSEYNOV                │', 'output');
+          print('│         CS Student & Builder            │', 'output');
+          print('├─────────────────────────────────────────┤', 'output');
+          print('│ Location  : Baku, Azerbaijan            │', 'output');
+          print('│ Target    : Baku Engineering University │', 'output');
+          print('│ Degree    : BSc Computer Science        │', 'output');
+          print('│ Next stop : Estonia (graduate studies)  │', 'output');
+          print('│ Goal      : Global tech career          │', 'output');
+          print('│ Mission   : Build impactful software    │', 'output');
+          print('├─────────────────────────────────────────┤', 'output');
+          print('│ GitHub  : github.com/rasimhuseynov      │', 'output');
+          print('│ LinkedIn: /in/rasim-huseynov-89469b40a  │', 'output');
+          print('└─────────────────────────────────────────┘', 'output');
+          blank();
+        },
+        skills() {
+          blank();
+          print('── TECH STACK ─────────────────────────────', 'output');
+          print('',                                            'output');
+          print('  Languages      Python · JavaScript · SQL', 'output');
+          print('  Web            HTML5 · CSS3 · Web Dev',    'output');
+          print('  CS Core        Algorithms · Data Structures','output');
+          print('  Tooling        Git · GitHub · Linux CLI',  'output');
+          print('  Interests      Systems · AI · Open Source','output');
+          print('',                                            'output');
+          print('── LEARNING ───────────────────────────────', 'output');
+          print('  Currently deepening: problem solving &',   'output');
+          print('  software engineering fundamentals.',       'output');
+          blank();
+        },
+        sudo() {
+          blank();
+          print('[SUDO] Authenticating...', 'easter');
+          setTimeout(() => {
+            print('[SUDO] Scanning retinal biometrics... ▓▓▓░░░░', 'easter');
+            setTimeout(() => {
+              print('[SUDO] ACCESS DENIED ✗', 'error');
+              print("You are not authorized to hack Rasim's mainframe.", 'easter');
+              print('This incident has been logged. 👁️', 'easter');
+              blank();
+              scrollBottom();
+            }, 800);
+            scrollBottom();
+          }, 600);
+        }
+      };
+
+      input.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter') return;
+        const raw = input.value.trim();
+        input.value = '';
+
+        const echo = document.createElement('div');
+        echo.className = 't-line cmd';
+        echo.innerHTML = '<span style="color:var(--cyan)">rasim@portfolio:~$</span> ' +
+          raw.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        body.appendChild(echo);
+
+        if (!raw) { scrollBottom(); return; }
+
+        const cmd = raw.toLowerCase().split(' ')[0];
+        if (COMMANDS[cmd]) {
+          COMMANDS[cmd]();
+        } else {
+          blank();
+          print('Command not found: ' + raw + '. Type "help" for a list of commands.', 'error');
+          blank();
+        }
+        scrollBottom();
+      });
+
+      input.focus();
+    }
   </script>
 
 </body>
