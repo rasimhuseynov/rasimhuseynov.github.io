@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rasim Huseynov — CS Student & Future Tech Builder</title>
+  <title>Rasim Huseynov — Automation Engineering Student & Future Tech Builder</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -35,7 +35,6 @@
       overflow-x: hidden;
     }
 
-    /* ── GRID NOISE TEXTURE ── */
     body::before {
       content: '';
       position: fixed;
@@ -48,9 +47,7 @@
       z-index: 0;
     }
 
-    /* ════════════════════════════════════════
-       INTRO SPLASH SCREEN — heart particle intro
-    ════════════════════════════════════════ */
+    /* ════ INTRO SPLASH ════ */
     #intro-splash {
       position: fixed;
       inset: 0;
@@ -163,9 +160,7 @@
       #sen-text.show { animation: none; }
     }
 
-    /* ════════════════════════════════════════
-       AUTH MODAL (hidden by default — no page lock)
-    ════════════════════════════════════════ */
+    /* ════ AUTH MODAL ════ */
     #login-gate {
       display: none;
       position: fixed;
@@ -177,12 +172,8 @@
       background: rgba(10, 15, 30, 0.78);
       backdrop-filter: blur(6px);
     }
+    #login-gate.open { display: flex; }
 
-    #login-gate.open {
-      display: flex;
-    }
-
-    /* Glow orbs behind the login card */
     .gate-orb {
       position: absolute;
       border-radius: 50%;
@@ -190,7 +181,7 @@
       opacity: 0.15;
       pointer-events: none;
     }
-    .gate-orb-1 { width: 500px; height: 500px; background: var(--cyan);   top: -100px; right: -80px; }
+    .gate-orb-1 { width: 500px; height: 500px; background: var(--cyan); top: -100px; right: -80px; }
     .gate-orb-2 { width: 400px; height: 400px; background: #7C3AED; bottom: -80px; left: -60px; }
 
     .gate-card {
@@ -206,7 +197,6 @@
       box-shadow: 0 0 60px rgba(0,212,255,0.08), 0 24px 48px rgba(0,0,0,0.4);
     }
 
-    /* ── Terminal header bar ── */
     .gate-term-bar {
       display: flex;
       align-items: center;
@@ -216,7 +206,6 @@
       user-select: none;
       position: relative;
     }
-
     .gate-dots { display: flex; gap: 0.45rem; }
     .gate-dots span { display: block; width: 12px; height: 12px; border-radius: 50%; }
     .dot-r { background: #FF5F57; }
@@ -250,7 +239,6 @@
     }
     .gate-close:hover { color: var(--cyan); background: rgba(0,212,255,0.08); }
 
-    /* ── Terminal-style message ── */
     .gate-log {
       padding: 1.25rem 1.5rem 0.75rem;
       font-family: 'Space Mono', monospace;
@@ -258,13 +246,11 @@
       line-height: 1.7;
       color: var(--slate-lt);
     }
+    .gate-log .gl-cyan  { color: var(--cyan); }
+    .gate-log .gl-amber { color: var(--amber); }
+    .gate-log .gl-green { color: #4ade80; }
+    .gate-log .gl-red   { color: #f87171; }
 
-    .gate-log .gl-cyan   { color: var(--cyan); }
-    .gate-log .gl-amber  { color: var(--amber); }
-    .gate-log .gl-green  { color: #4ade80; }
-    .gate-log .gl-red    { color: #f87171; }
-
-    /* ── Divider ── */
     .gate-divider {
       display: flex;
       align-items: center;
@@ -287,7 +273,6 @@
       white-space: nowrap;
     }
 
-    /* ── Auth button ── */
     .gate-socials {
       display: flex;
       flex-direction: column;
@@ -313,7 +298,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .gate-btn::before {
       content: '';
       position: absolute;
@@ -326,9 +310,7 @@
     .gate-btn:hover { transform: translateY(-2px); }
     .gate-btn:active { transform: translateY(0); }
     .gate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
     .gate-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
-
     .gate-btn-label { flex: 1; }
     .gate-btn-tag {
       font-family: 'Space Mono', monospace;
@@ -337,7 +319,6 @@
       opacity: 0.6;
     }
 
-    /* Google */
     .gate-btn-google {
       border-color: rgba(234,67,53,0.4);
       color: #EA4335;
@@ -345,7 +326,6 @@
     }
     .gate-btn-google:hover { box-shadow: 0 0 18px rgba(234,67,53,0.25), inset 0 0 0 1px rgba(234,67,53,0.3); }
 
-    /* ── Access Granted overlay ── */
     #access-granted {
       position: absolute;
       inset: 0;
@@ -362,7 +342,7 @@
     #access-granted.show { display: flex; }
 
     .ag-lines { width: 100%; }
-    .ag-line  {
+    .ag-line {
       opacity: 0;
       transform: translateX(-8px);
       transition: opacity 0.3s, transform 0.3s;
@@ -389,7 +369,6 @@
       transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
     }
 
-    /* ── Gate footer note ── */
     .gate-note {
       padding: 0.75rem 1.5rem 1rem;
       font-family: 'Space Mono', monospace;
@@ -399,9 +378,7 @@
       border-top: 1px solid var(--border);
     }
 
-    /* ════════════════════════════════════════
-       NAV
-    ════════════════════════════════════════ */
+    /* ════ NAV ════ */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -414,7 +391,6 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-
     .nav-logo {
       font-family: 'Space Mono', monospace;
       font-size: 1rem;
@@ -422,7 +398,6 @@
       letter-spacing: 0.02em;
     }
     .nav-logo span { color: var(--white); }
-
     .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
     .nav-links a {
       color: var(--slate-lt);
@@ -434,7 +409,6 @@
       transition: color 0.2s, border-color 0.2s;
     }
     .nav-links a:hover { color: var(--cyan); }
-
     .nav-links a#openAuthBtn {
       color: var(--cyan);
       border: 1px solid var(--border);
@@ -442,14 +416,10 @@
       border-radius: 6px;
     }
     .nav-links a#openAuthBtn:hover { border-color: var(--cyan); }
-
-    .nav-links a#logoutBtn {
-      color: var(--slate-lt);
-      border: 1px solid transparent;
-    }
+    .nav-links a#logoutBtn { color: var(--slate-lt); border: 1px solid transparent; }
     .nav-links a#logoutBtn:hover { color: var(--amber); }
 
-    /* ── HERO ── */
+    /* ════ HERO ════ */
     .hero {
       position: relative;
       min-height: 100vh;
@@ -459,7 +429,6 @@
       padding: 8rem 5vw 5rem;
       z-index: 1;
     }
-
     .hero-eyebrow {
       font-family: 'Space Mono', monospace;
       font-size: 0.8rem;
@@ -477,7 +446,6 @@
       width: 32px; height: 1px;
       background: var(--cyan);
     }
-
     .hero-name {
       font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(3rem, 9vw, 7.5rem);
@@ -508,13 +476,12 @@
     @keyframes blink { 50% { opacity: 0; } }
 
     .hero-desc {
-      max-width: 560px;
+      max-width: 600px;
       color: var(--slate-lt);
       font-size: 1.05rem;
       line-height: 1.75;
       margin-bottom: 3rem;
     }
-
     .hero-cta { display: flex; flex-wrap: wrap; gap: 1rem; }
 
     .btn {
@@ -536,7 +503,6 @@
     .btn-ghost { background: transparent; color: var(--white); border: 1px solid var(--border); }
     .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
 
-    /* ── SOCIAL STRIP (hero) ── */
     .social-strip {
       position: absolute;
       right: 5vw; top: 50%;
@@ -565,18 +531,16 @@
     .social-icon:hover { color: var(--cyan); border-color: var(--cyan); transform: translateY(-3px); }
     .social-icon svg { width: 18px; height: 18px; fill: currentColor; }
 
-    /* ── GLOW ORBS ── */
     .orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(90px); opacity: 0.18; z-index: 0; }
     .orb-1 { width: 480px; height: 480px; background: var(--cyan); top: -80px; right: 10vw; }
     .orb-2 { width: 360px; height: 360px; background: #6A3FDE; bottom: 0; left: 5vw; }
 
-    /* ── SECTIONS ── */
+    /* ════ SECTIONS ════ */
     section {
       position: relative;
       z-index: 1;
       padding: 6rem 5vw;
     }
-
     .section-label {
       font-family: 'Space Mono', monospace;
       font-size: 0.75rem;
@@ -585,7 +549,6 @@
       text-transform: uppercase;
       margin-bottom: 0.75rem;
     }
-
     .section-title {
       font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(1.8rem, 4vw, 2.8rem);
@@ -596,7 +559,7 @@
     }
     .section-title em { font-style: normal; color: var(--cyan); }
 
-    /* ── ABOUT ── */
+    /* ════ ABOUT ════ */
     .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
     .about-text p { color: var(--slate-lt); margin-bottom: 1.25rem; font-size: 1rem; }
     .about-text p strong { color: var(--white); font-weight: 600; }
@@ -611,13 +574,31 @@
       transition: border-color 0.2s, transform 0.2s;
     }
     .stat-card:hover { border-color: rgba(0,212,255,0.4); transform: translateX(4px); }
-    .stat-card-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+
+    .stat-card-icon-wrap {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    .stat-card-icon-wrap svg {
+      width: 18px; height: 18px;
+      fill: var(--cyan);
+    }
+    .stat-card-icon-wrap.amber svg { fill: var(--amber); background: none; }
+    .stat-card-icon-wrap.purple svg { fill: #A78BFA; }
+    .stat-card-icon-wrap.amber { background: rgba(255,179,71,0.08); border-color: rgba(255,179,71,0.2); }
+    .stat-card-icon-wrap.purple { background: rgba(167,139,250,0.08); border-color: rgba(167,139,250,0.2); }
+    .stat-card-icon-wrap.green { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.2); }
+    .stat-card-icon-wrap.green svg { fill: #4ade80; }
+
     .stat-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
     .stat-card-sub { font-size: 0.85rem; color: var(--slate-lt); }
 
-    /* ── ROADMAP ── */
+    /* ════ ROADMAP ════ */
     .roadmap { background: var(--navy-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-
     .timeline { position: relative; padding-left: 2rem; }
     .timeline::before {
       content: '';
@@ -643,7 +624,7 @@
     .timeline-heading { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
     .timeline-body { font-size: 0.9rem; color: var(--slate-lt); max-width: 520px; }
 
-    /* ── SKILLS ── */
+    /* ════ SKILLS ════ */
     .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
     .skill-pill {
       background: var(--card-bg);
@@ -659,8 +640,9 @@
     .skill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
     .skill-dot.amber  { background: var(--amber); }
     .skill-dot.purple { background: #A78BFA; }
+    .skill-dot.green  { background: #4ade80; }
 
-    /* ── CONNECT ── */
+    /* ════ CONNECT ════ */
     .connect { text-align: center; }
     .connect .section-label, .connect .section-title { text-align: center; }
     .connect-desc { max-width: 520px; margin: 0 auto 3rem; color: var(--slate-lt); }
@@ -681,9 +663,8 @@
     .connect-card-label { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--white); }
     .connect-card-handle { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--slate-lt); }
 
-    /* ── TERMINAL SIMULATOR ── */
+    /* ════ TERMINAL ════ */
     #terminal-section { padding: 6rem 5vw; position: relative; z-index: 1; }
-
     .terminal-wrap {
       max-width: 860px; margin: 0 auto;
       background: var(--card-bg);
@@ -692,7 +673,6 @@
       backdrop-filter: blur(12px);
       box-shadow: 0 0 40px rgba(0,212,255,0.07);
     }
-
     .terminal-header {
       display: flex; align-items: center;
       padding: 0.75rem 1.25rem;
@@ -710,7 +690,6 @@
       font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--slate-lt);
       pointer-events: none;
     }
-
     .terminal-body {
       padding: 1.25rem 1.5rem;
       min-height: 320px; max-height: 420px;
@@ -720,7 +699,6 @@
     .terminal-body::-webkit-scrollbar { width: 4px; }
     .terminal-body::-webkit-scrollbar-track { background: transparent; }
     .terminal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
     .t-line            { margin-bottom: 0.15rem; word-break: break-word; }
     .t-line.welcome    { color: var(--cyan); }
     .t-line.output     { color: #a0c4d8; white-space: pre; }
@@ -728,7 +706,6 @@
     .t-line.error      { color: #f87171; }
     .t-line.easter     { color: var(--amber); }
     .t-line.blank      { min-height: 1em; }
-
     .terminal-input-row {
       display: flex; align-items: center;
       padding: 0.6rem 1.5rem 1rem; gap: 0.5rem;
@@ -741,7 +718,7 @@
       color: var(--white); caret-color: var(--cyan); min-width: 0;
     }
 
-    /* ── FOOTER ── */
+    /* ════ FOOTER ════ */
     footer {
       position: relative; z-index: 1; text-align: center;
       padding: 2.5rem 5vw;
@@ -752,17 +729,16 @@
     footer a { color: var(--slate-lt); text-decoration: none; transition: color 0.2s; }
     footer a:hover { color: var(--cyan); }
 
-    /* ── SCROLL REVEAL ── */
+    /* ════ SCROLL REVEAL ════ */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
-    /* ── RESPONSIVE ── */
+    /* ════ RESPONSIVE ════ */
     @media (max-width: 860px) {
       .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .social-strip { display: none; }
       .gate-card { max-width: 100%; }
     }
-
     @media (max-width: 600px) {
       .nav-links { gap: 1rem; }
       .nav-links a:not(#openAuthBtn):not(#logoutBtn) { display: none; }
@@ -778,7 +754,6 @@
       #sen-text { font-size: clamp(2.2rem, 14vw, 4rem); }
       #skip-intro { bottom: 1.25rem; right: 1.25rem; }
     }
-
     @media (prefers-reduced-motion: reduce) {
       .reveal { transition: none; opacity: 1; transform: none; }
       .cursor { animation: none; }
@@ -787,30 +762,19 @@
 </head>
 <body class="intro-active">
 
-  <!-- ════════════════════════════════════════
-       INTRO SPLASH — particle heart made of
-       "Rrashad" text flying into formation,
-       with "Sən" pulsing at the center.
-  ════════════════════════════════════════ -->
+  <!-- INTRO SPLASH -->
   <div id="intro-splash">
     <canvas id="heartCanvas"></canvas>
     <div id="sen-text">RASIM</div>
     <div class="intro-hint" id="introHint">click anywhere to continue</div>
-    <button id="skip-intro" type="button">Skip ▸</button>
+    <button id="skip-intro" type="button">Skip &#9658;</button>
   </div>
 
-  <!-- ════════════════════════════════════════
-       AUTH MODAL — hidden by default (display:none),
-       opened only when #openAuthBtn is clicked.
-       Page content below is fully visible without it.
-  ════════════════════════════════════════ -->
+  <!-- AUTH MODAL -->
   <div id="login-gate" role="dialog" aria-modal="true" aria-label="Sign in">
     <div class="gate-orb gate-orb-1"></div>
     <div class="gate-orb gate-orb-2"></div>
-
     <div class="gate-card">
-
-      <!-- Terminal title bar -->
       <div class="gate-term-bar">
         <div class="gate-dots">
           <span class="dot-r"></span>
@@ -820,18 +784,12 @@
         <div class="gate-term-title">rasim@portfolio:~ — sign in</div>
         <button class="gate-close" id="closeAuthBtn" type="button" aria-label="Close sign-in dialog">&times;</button>
       </div>
-
-      <!-- Message -->
       <div class="gate-log" id="gateLog">
         <div class="gl-cyan">RasimOS v1.0.0 — sign-in module</div>
         <div>Sign in to sync your session across tabs.</div>
         <div class="gl-amber">Awaiting credentials...</div>
       </div>
-
-      <!-- Auth divider -->
       <div class="gate-divider"><span>// SIGN IN WITH</span></div>
-
-      <!-- Google sign-in — listener attached in JS, fires only on click -->
       <div class="gate-socials">
         <button class="gate-btn gate-btn-google" id="btn-google" type="button">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -843,27 +801,19 @@
           <span class="gate-btn-label">Sign in with Gmail (Google)</span>
           <span class="gate-btn-tag">OAUTH2</span>
         </button>
-      </div><!-- /gate-socials -->
-
-      <!-- Access Granted overlay (shown after successful sign-in) -->
+      </div>
       <div id="access-granted">
         <div class="ag-lines" id="agLines"></div>
         <div class="ag-bar-wrap"><div class="ag-bar" id="agBar"></div></div>
       </div>
-
       <div class="gate-note">
-        Secured via Firebase Authentication &nbsp;·&nbsp;
+        Secured via Firebase Authentication &nbsp;&middot;&nbsp;
         No data is stored without your consent.
       </div>
+    </div>
+  </div>
 
-    </div><!-- /gate-card -->
-  </div><!-- /login-gate -->
-
-
-  <!-- ════════════════════════════════════════
-       PORTFOLIO CONTENT — visible by default,
-       no gate, no JS unlock required.
-  ════════════════════════════════════════ -->
+  <!-- PORTFOLIO CONTENT -->
   <div id="portfolio-content">
 
     <!-- NAV -->
@@ -885,7 +835,7 @@
       <div class="orb orb-1"></div>
       <div class="orb orb-2"></div>
 
-      <div class="hero-eyebrow">CS Student &amp; Future Builder</div>
+      <div class="hero-eyebrow">Automation Engineering Student &amp; Future Builder</div>
 
       <h1 class="hero-name">
         <span class="first">Rasim</span>
@@ -898,14 +848,16 @@
       </div>
 
       <p class="hero-desc">
-        Aspiring Computer Science student at Baku Engineering University — building toward
-        a global tech career rooted in curiosity, discipline, and a drive to create
-        things that actually matter.
+        Aspiring Process Automation Engineering student at Baku Engineering University
+        — fascinated by the intersection of code and physical systems, building toward
+        a global tech career where automation, control, and software converge.
       </p>
 
       <div class="hero-cta">
         <a href="#about" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7-7 7-7-7"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7-7 7-7-7"/>
+          </svg>
           Explore my story
         </a>
         <a href="#connect" class="btn btn-ghost">Get in touch</a>
@@ -929,10 +881,10 @@
       <div class="about-grid">
         <div class="about-text reveal">
           <p>
-            I'm <strong>Rasim Huseynov</strong>, a driven young technologist from Azerbaijan with
-            my sights set on studying <strong>Computer Science at Baku Engineering University (BEU)</strong>.
-            BEU's reputation for rigorous, practice-first engineering education makes it the ideal
-            launchpad for what I have in mind.
+            I'm <strong>Rasim Huseynov</strong>, an aspiring automation engineer from Azerbaijan,
+            studying <strong>Process Automation Engineering (English-taught) at Baku Engineering
+            University (BEU)</strong>. I'm fascinated by the intersection of code and physical
+            systems — designing intelligent processes that make industries faster, safer, and smarter.
           </p>
           <p>
             But my vision stretches further. After building a solid foundation at BEU, I plan
@@ -943,31 +895,51 @@
           </p>
           <p>
             Ultimately, my goal is a <strong>global tech career</strong> rooted in creating
-            software that solves real, meaningful problems — systems that improve lives,
-            streamline societies, and push what's technically possible just a little bit further.
+            systems that solve real, meaningful problems — blending automation, control theory,
+            and software into technology that genuinely moves the world forward.
           </p>
         </div>
 
         <div class="about-cards reveal">
           <div class="stat-card">
-            <div class="stat-card-icon">🎓</div>
-            <div class="stat-card-title">Target: Baku Engineering University</div>
-            <div class="stat-card-sub">BSc Computer Science — first milestone of many</div>
+            <div class="stat-card-icon-wrap">
+              <!-- graduation cap -->
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+              </svg>
+            </div>
+            <div class="stat-card-title">Baku Engineering University</div>
+            <div class="stat-card-sub">BSc Process Automation Engineering (English-taught)</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card-icon">🌍</div>
+            <div class="stat-card-icon-wrap amber">
+              <!-- globe -->
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              </svg>
+            </div>
             <div class="stat-card-title">Next horizon: Estonia</div>
             <div class="stat-card-sub">Graduate study in Europe's digital capital</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card-icon">⚡</div>
-            <div class="stat-card-title">Mission: Impactful Projects</div>
-            <div class="stat-card-sub">Software that moves the needle on real-world problems</div>
+            <div class="stat-card-icon-wrap purple">
+              <!-- lightning / impact -->
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+              </svg>
+            </div>
+            <div class="stat-card-title">Mission: Impactful Systems</div>
+            <div class="stat-card-sub">Automation and software that moves the needle on real problems</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card-icon">🇦🇿</div>
+            <div class="stat-card-icon-wrap green">
+              <!-- location pin -->
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+            </div>
             <div class="stat-card-title">Based in Azerbaijan</div>
-            <div class="stat-card-sub">Baku → Tallinn → The world</div>
+            <div class="stat-card-sub">Baku &rarr; Tallinn &rarr; The world</div>
           </div>
         </div>
       </div>
@@ -977,7 +949,6 @@
     <section id="terminal-section">
       <div class="section-label">01.5 — Interactive</div>
       <h2 class="section-title" style="margin-bottom:2rem;">Try the <em>terminal.</em></h2>
-
       <div class="terminal-wrap reveal" id="terminalWrap">
         <div class="terminal-header">
           <div class="terminal-dots">
@@ -1002,23 +973,23 @@
     <section class="roadmap" id="roadmap">
       <div class="section-label">02 — Roadmap</div>
       <h2 class="section-title">Where I'm going &amp;<br><em>how I'll get there.</em></h2>
-
       <div class="timeline reveal">
         <div class="timeline-item">
           <div class="timeline-year">NOW</div>
           <div class="timeline-heading">Laying the groundwork</div>
           <div class="timeline-body">
-            Sharpening core CS fundamentals — algorithms, data structures, mathematics —
-            and building personal projects that push my skills beyond the classroom.
+            Sharpening core engineering and CS fundamentals — control theory, algorithms,
+            data structures, mathematics — and building personal projects that push my
+            skills beyond the classroom.
           </div>
         </div>
         <div class="timeline-item">
           <div class="timeline-year">NEXT</div>
           <div class="timeline-heading">BSc at Baku Engineering University</div>
           <div class="timeline-body">
-            Enrolling in BEU's Computer Science programme — academic rigour, hands-on
-            engineering labs, and a network of future-focused peers in Azerbaijan's
-            premier tech institution.
+            Enrolled in BEU's English-taught Process Automation Engineering programme —
+            academic rigour, hands-on engineering labs, and a network of future-focused
+            peers in Azerbaijan's premier tech institution.
           </div>
         </div>
         <div class="timeline-item">
@@ -1026,7 +997,8 @@
           <div class="timeline-heading">Graduate studies in Estonia</div>
           <div class="timeline-body">
             Taking my education to Europe — deepening expertise in areas like distributed
-            systems, AI, or cybersecurity within Estonia's uniquely digital-first society.
+            systems, AI-driven automation, or cybersecurity within Estonia's uniquely
+            digital-first society.
           </div>
         </div>
         <div class="timeline-item">
@@ -1045,7 +1017,6 @@
     <section id="skills">
       <div class="section-label">03 — Skills &amp; Interests</div>
       <h2 class="section-title">What I'm <em>building with.</em></h2>
-
       <div class="skills-grid reveal">
         <div class="skill-pill"><span class="skill-dot"></span>Python</div>
         <div class="skill-pill"><span class="skill-dot"></span>JavaScript</div>
@@ -1053,9 +1024,11 @@
         <div class="skill-pill"><span class="skill-dot amber"></span>Algorithms</div>
         <div class="skill-pill"><span class="skill-dot amber"></span>Data Structures</div>
         <div class="skill-pill"><span class="skill-dot amber"></span>Git &amp; GitHub</div>
+        <div class="skill-pill"><span class="skill-dot purple"></span>Control Theory</div>
         <div class="skill-pill"><span class="skill-dot purple"></span>Problem Solving</div>
         <div class="skill-pill"><span class="skill-dot purple"></span>Linux Basics</div>
-        <div class="skill-pill"><span class="skill-dot purple"></span>Databases (SQL)</div>
+        <div class="skill-pill"><span class="skill-dot green"></span>Databases (SQL)</div>
+        <div class="skill-pill"><span class="skill-dot green"></span>Process Automation</div>
         <div class="skill-pill"><span class="skill-dot"></span>Web Development</div>
       </div>
     </section>
@@ -1068,7 +1041,6 @@
         I'm always open to connecting with fellow students, engineers, and anyone who
         cares about technology done right. Find me on LinkedIn or explore my work on GitHub.
       </p>
-
       <div class="connect-cards reveal">
         <a href="https://www.linkedin.com/in/rasim-huseynov-89469b40a" target="_blank" rel="noopener" class="connect-card">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -1085,33 +1057,18 @@
 
     <!-- FOOTER -->
     <footer>
-      <span>Rasim Huseynov</span> — Built with curiosity &amp; intent · Baku, Azerbaijan · 2025
-      &nbsp;·&nbsp; <a href="/privacy-policy.html">Privacy Policy</a>
+      <span>Rasim Huseynov</span> &mdash; Built with curiosity &amp; intent &nbsp;&middot;&nbsp; Baku, Azerbaijan &nbsp;&middot;&nbsp; 2025
+      &nbsp;&middot;&nbsp; <a href="/privacy-policy.html">Privacy Policy</a>
     </footer>
 
   </div><!-- /portfolio-content -->
 
 
-  <!-- ════════════════════════════════════════
-       SCRIPTS
-  ════════════════════════════════════════ -->
-
-  <!-- Firebase SDK compat bundles -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
   <script>
-    /* ════════════════════════════════════════════════════════════
-       FIREBASE CONFIGURATION — your live config values, preserved.
-       If you see auth/api-key-not-valid or auth/unauthorized-domain:
-       1. Firebase Console → Authentication → Settings →
-          Authorized Domains → add your domain
-       2. Google Cloud Console → APIs & Services → Credentials →
-          Browser Key → Application Restrictions →
-          add your domain as an allowed referrer
-       3. If the key was exposed publicly, regenerate it and
-          paste the new value here.
-    ════════════════════════════════════════════════════════════ */
     const firebaseConfig = {
       apiKey:            "AIzaSyAXh-IdL2GpoaKZUyXO53tfz8phh_UrMIk",
       authDomain:        "rasim-auth-27fe8.firebaseapp.com",
@@ -1122,28 +1079,16 @@
       measurementId:     "G-S2PKQ27P3H"
     };
 
-    // Initialise Firebase (guard against double-init on hot reload)
     const firebaseApp = firebase.apps.length
       ? firebase.app()
       : firebase.initializeApp(firebaseConfig);
 
     const auth = firebase.auth();
     auth.useDeviceLanguage();
-
-    // Single provider — Google only
     const googleProvider = new firebase.auth.GoogleAuthProvider();
   </script>
 
   <script>
-    /* ════════════════════════════════════════════════════════════
-       AUTH MODAL + SESSION STATE
-       - The modal is display:none by default (see CSS) and is
-         only shown when #openAuthBtn is clicked.
-       - No auth function runs automatically on page load other
-         than registering the onAuthStateChanged listener, which
-         just reads existing session state — it never opens the
-         modal or triggers a sign-in popup by itself.
-    ════════════════════════════════════════════════════════════ */
     window.addEventListener('DOMContentLoaded', () => {
       const loginGate = document.getElementById('login-gate');
       const openBtn   = document.getElementById('openAuthBtn');
@@ -1172,40 +1117,24 @@
         resetModalState();
       }
 
-      // Open modal — only fires on explicit click
       openBtn.addEventListener('click', openModal);
-
-      // Close modal — explicit close button
       closeBtn.addEventListener('click', closeModal);
 
-      // Close modal — click on backdrop (outside the card)
       loginGate.addEventListener('click', (e) => {
         if (e.target === loginGate) closeModal();
       });
 
-      // Close modal — Escape key
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && loginGate.classList.contains('open')) closeModal();
       });
 
-      // Google sign-in — only fires on explicit click
-      googleBtn.addEventListener('click', function () {
-        handleGoogleSignIn();
-      });
+      googleBtn.addEventListener('click', () => handleGoogleSignIn());
 
-      // Log out — only fires on explicit click
-      logoutBtn.addEventListener('click', function (e) {
+      logoutBtn.addEventListener('click', (e) => {
         e.preventDefault();
         auth.signOut();
       });
 
-      /* ──────────────────────────────────────────────────────────
-         SESSION STATE
-         Fires once on load with the current state (no popups,
-         no modal), then again whenever auth state changes —
-         including changes made in other tabs.
-      ────────────────────────────────────────────────────────── */
-      // Default state while Firebase determines whether a session exists
       openBtn.style.display   = 'inline-block';
       logoutBtn.style.display = 'none';
 
@@ -1220,38 +1149,28 @@
       });
     });
 
-    /* ════════════════════════════════════════════════════════════
-       GOOGLE SIGN-IN HANDLER
-       Called only from the click listener above.
-    ════════════════════════════════════════════════════════════ */
     function handleGoogleSignIn() {
       document.querySelectorAll('.gate-btn').forEach(b => b.disabled = true);
-
       auth.signInWithPopup(googleProvider)
-        .then(() => {
-          runAccessGranted();
-        })
+        .then(() => { runAccessGranted(); })
         .catch(error => {
           const log = document.getElementById('gateLog');
           const e = document.createElement('div');
           e.className = 'gl-red';
-
-          // Translate common Firebase error codes into plain instructions
           const hints = {
             'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
-              '[ERR] API key rejected. Steps: (1) Add your domain to Firebase Auth → Authorized Domains. (2) In Google Cloud Console → Credentials, restrict the Browser Key to your domain. (3) If key was exposed publicly, regenerate it.',
+              '[ERR] API key rejected. Add your domain to Firebase Auth Authorized Domains.',
             'auth/unauthorized-domain':
-              '[ERR] Domain not authorised. Go to Firebase Console → Authentication → Settings → Authorized Domains and add your domain.',
+              '[ERR] Domain not authorised. Firebase Console > Authentication > Authorized Domains.',
             'auth/popup-blocked':
-              '[ERR] Popup was blocked by the browser. Allow popups for this site and try again.',
+              '[ERR] Popup blocked. Allow popups for this site and try again.',
             'auth/popup-closed-by-user':
-              '[ERR] Sign-in popup was closed before completing. Please try again.',
+              '[ERR] Sign-in popup closed. Please try again.',
             'auth/cancelled-popup-request':
-              '[ERR] Only one popup can be open at a time. Please try again.',
+              '[ERR] Only one popup at a time. Please try again.',
             'auth/account-exists-with-different-credential':
-              '[ERR] An account already exists with this email under a different provider.',
+              '[ERR] Account exists with a different provider for this email.',
           };
-
           e.textContent = hints[error.code] || ('[ERR] ' + error.message);
           log.appendChild(e);
           log.scrollTop = log.scrollHeight;
@@ -1259,13 +1178,6 @@
         });
     }
 
-    /* ════════════════════════════════════════════════════════════
-       ACCESS GRANTED SEQUENCE
-       Short success animation, then auto-closes the modal.
-       The onAuthStateChanged listener (above) handles swapping
-       the Sign In / Log Out links once Firebase confirms the
-       session — this is purely visual feedback.
-    ════════════════════════════════════════════════════════════ */
     function runAccessGranted() {
       const overlay = document.getElementById('access-granted');
       const linesEl = document.getElementById('agLines');
@@ -1274,10 +1186,10 @@
       overlay.classList.add('show');
 
       const lines = [
-        { text: '[AUTH]  Provider handshake: GOOGLE',  cls: 'ag-line cyan',  t: 0   },
-        { text: '[AUTH]  Token verified ✓',             cls: 'ag-line green', t: 350 },
+        { text: '[AUTH]  Provider handshake: GOOGLE',   cls: 'ag-line cyan',  t: 0   },
+        { text: '[AUTH]  Token verified',               cls: 'ag-line green', t: 350 },
         { text: '[SYS]   Session established.',         cls: 'ag-line amber', t: 650 },
-        { text: '▓▓▓▓▓▓▓▓▓▓  WELCOME BACK  ▓▓▓▓▓▓▓▓▓▓', cls: 'ag-line green', t: 950 },
+        { text: '  WELCOME BACK, RASIM  ',              cls: 'ag-line green', t: 950 },
       ];
 
       lines.forEach(({ text, cls, t }) => {
@@ -1298,35 +1210,22 @@
         linesEl.innerHTML = '';
         bar.style.width = '0%';
         document.querySelectorAll('.gate-btn').forEach(b => b.disabled = false);
-      }, 1800);
+      }, 1900);
     }
   </script>
 
   <script>
-    /* ════════════════════════════════════════════════════════════
-       INTRO SPLASH — CANVAS PARTICLE HEART
-       Thousands of tiny "Rrashad" labels fly in from random edges
-       and settle into a heart silhouette built from a parametric
-       heart curve. Once particles have mostly settled, "Sən"
-       fades in at the exact center with a glow + pulse animation.
-       Uses plain Canvas 2D — no external libraries — so it stays
-       lightweight and smooth even with a large particle count.
-    ════════════════════════════════════════════════════════════ */
+    /* ════ INTRO SPLASH ════ */
     (function () {
-      // Prevent the browser from restoring a previous scroll position
-      // (e.g. on refresh) so the intro and main content both start
-      // at the very top of the page.
-      if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-      }
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
       window.scrollTo(0, 0);
 
-      const splash   = document.getElementById('intro-splash');
-      const canvas   = document.getElementById('heartCanvas');
-      const ctx      = canvas.getContext('2d');
-      const senText  = document.getElementById('sen-text');
-      const skipBtn  = document.getElementById('skip-intro');
-      const hint     = document.getElementById('introHint');
+      const splash  = document.getElementById('intro-splash');
+      const canvas  = document.getElementById('heartCanvas');
+      const ctx     = canvas.getContext('2d');
+      const senText = document.getElementById('sen-text');
+      const skipBtn = document.getElementById('skip-intro');
+      const hint    = document.getElementById('introHint');
 
       let W, H, DPR;
       function resize() {
@@ -1340,14 +1239,10 @@
       window.addEventListener('resize', resize);
 
       const LABEL = 'RASKA';
-
-      // Scale particle count to screen size / device for smooth perf,
-      // while still reading as "thousands" of tiny words on desktop.
       const area = window.innerWidth * window.innerHeight;
       const PARTICLE_COUNT = Math.max(400, Math.min(1200, Math.round(area / 1300)));
 
       function heartCurve(t) {
-        // Classic parametric heart, t in [0, 2π)
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
         return { x, y };
@@ -1357,42 +1252,36 @@
         const cx = window.innerWidth / 2;
         const cy = window.innerHeight / 2 - window.innerHeight * 0.03;
         const baseScale = Math.min(window.innerWidth, window.innerHeight) / 34;
-
         const particles = [];
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-          const t = Math.random() * Math.PI * 2;
-          // sqrt() biases fewer points near the center, more toward
-          // the outline — gives a denser, more "filled" heart look.
-          const fill = Math.sqrt(Math.random());
-          const pt = heartCurve(t);
 
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          const t    = Math.random() * Math.PI * 2;
+          const fill = Math.sqrt(Math.random());
+          const pt   = heartCurve(t);
           const targetX = cx + pt.x * fill * baseScale;
           const targetY = cy - pt.y * fill * baseScale;
 
-          // Start scattered just outside the viewport edges
           const edge = Math.floor(Math.random() * 4);
           let startX, startY;
           const pad = 80;
-          if (edge === 0)      { startX = -pad; startY = Math.random() * window.innerHeight; }
-          else if (edge === 1) { startX = window.innerWidth + pad; startY = Math.random() * window.innerHeight; }
+          if      (edge === 0) { startX = -pad;                           startY = Math.random() * window.innerHeight; }
+          else if (edge === 1) { startX = window.innerWidth + pad;        startY = Math.random() * window.innerHeight; }
           else if (edge === 2) { startX = Math.random() * window.innerWidth; startY = -pad; }
           else                 { startX = Math.random() * window.innerWidth; startY = window.innerHeight + pad; }
 
-          const size = 7 + Math.random() * 6;
-          const sizeBucket = Math.round(size); // bucket so font changes less often
-          const hue = 340 + Math.random() * 25; // pink → red range
-          const baseAlpha = 0.55 + Math.random() * 0.45;
+          const size       = 7 + Math.random() * 6;
+          const sizeBucket = Math.round(size);
+          const hue        = 340 + Math.random() * 25;
+          const baseAlpha  = 0.55 + Math.random() * 0.45;
 
           particles.push({
             x: startX, y: startY,
-            startX, startY,
-            targetX, targetY,
+            startX, startY, targetX, targetY,
             delay: Math.random() * 900,
             duration: 1100 + Math.random() * 700,
             sizeBucket,
-            color: function (mult) {
-              const a = (baseAlpha * mult).toFixed(2);
-              return 'hsla(' + hue + ', 90%, 62%, ' + a + ')';
+            color(mult) {
+              return 'hsla(' + hue + ',90%,62%,' + (baseAlpha * mult).toFixed(2) + ')';
             },
             settled: false
           });
@@ -1405,10 +1294,7 @@
 
       function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
 
-      let startTime = null;
-      let allSettled = false;
-      let senShown = false;
-      let rafId = null;
+      let startTime = null, allSettled = false, senShown = false, rafId = null;
 
       function draw(now) {
         if (startTime === null) startTime = now;
@@ -1419,33 +1305,26 @@
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
         let settledCount = 0;
-
-        // No shadowBlur, no per-particle save/restore/rotate, no font
-        // re-set per particle — these were the main causes of dropped
-        // frames. Particles are grouped by size so the font is only
-        // set once per group, and color uses plain rgba (cheaper than
-        // hsla) for a faster fill path.
-        ctx.textAlign = 'center';
+        ctx.textAlign    = 'center';
         ctx.textBaseline = 'middle';
-        ctx.shadowBlur = 0;
+        ctx.shadowBlur   = 0;
 
         let currentSizeKey = null;
 
         for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
+          const p      = particles[i];
           const localT = elapsed - p.delay;
-          let progress = localT <= 0 ? 0 : Math.min(1, localT / p.duration);
-          const eased = easeOutCubic(progress);
+          const progress = localT <= 0 ? 0 : Math.min(1, localT / p.duration);
+          const eased  = easeOutCubic(progress);
 
           p.x = p.startX + (p.targetX - p.startX) * eased;
           p.y = p.startY + (p.targetY - p.startY) * eased;
 
           if (progress >= 1) { p.settled = true; settledCount++; }
 
-          const sizeKey = p.sizeBucket;
-          if (sizeKey !== currentSizeKey) {
-            ctx.font = '600 ' + sizeKey + 'px "Space Grotesk", sans-serif';
-            currentSizeKey = sizeKey;
+          if (p.sizeBucket !== currentSizeKey) {
+            ctx.font = '600 ' + p.sizeBucket + 'px "Space Grotesk", sans-serif';
+            currentSizeKey = p.sizeBucket;
           }
 
           ctx.fillStyle = p.color(Math.max(progress, 0.15));
@@ -1454,9 +1333,7 @@
 
         ctx.restore();
 
-        if (!allSettled && settledCount === particles.length) {
-          allSettled = true;
-        }
+        if (!allSettled && settledCount === particles.length) allSettled = true;
 
         if (allSettled && !senShown) {
           senShown = true;
@@ -1475,11 +1352,9 @@
         document.body.scrollTop = 0;
         splash.classList.add('fade-out');
         document.body.classList.remove('intro-active');
-        window.scrollTo(0, 0);
         setTimeout(() => { splash.style.display = 'none'; window.scrollTo(0, 0); }, 1050);
       }
 
-      // Auto-advance once the heart has fully formed and "Sən" has pulsed
       let autoTimer = setTimeout(endIntro, 6200);
 
       function userSkip() {
@@ -1493,25 +1368,20 @@
         userSkip();
       });
       document.addEventListener('keydown', (e) => {
-        if (splash.style.display !== 'none' && (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape')) {
-          userSkip();
-        }
+        if (splash.style.display !== 'none' &&
+            (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape')) userSkip();
       });
     })();
   </script>
 
   <script>
-    /* ════════════════════════════════════════════════════════════
-       PORTFOLIO INIT
-       Runs immediately on DOMContentLoaded — the page is fully
-       visible and interactive without any auth step (the intro
-       splash sits on top temporarily and does not block this).
-    ════════════════════════════════════════════════════════════ */
+    /* ════ PORTFOLIO INIT ════ */
     window.addEventListener('DOMContentLoaded', () => {
+
       // Hero typewriter
       const phrases = [
-        'buildFuture("BEU → Estonia → World");',
-        'learn(algorithms, systems, creativity);',
+        'study("Process Automation Engineering @ BEU");',
+        'learn(controlTheory, algorithms, systems);',
         'git commit -m "another step forward"',
         'dream.setGoal("global tech impact");',
       ];
@@ -1539,13 +1409,11 @@
       }, { threshold: 0.12 });
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-      // Terminal simulator
+      // Terminal
       initTerminal();
     });
 
-    /* ════════════════════════════════════════════════════════════
-       LINUX TERMINAL SIMULATOR
-    ════════════════════════════════════════════════════════════ */
+    /* ════ TERMINAL ════ */
     function initTerminal() {
       const body  = document.getElementById('terminalBody');
       const input = document.getElementById('t-input');
@@ -1560,64 +1428,65 @@
         d.textContent = text;
         body.appendChild(d);
       }
-
       function blank() { print('', 'blank'); }
       function scrollBottom() { body.scrollTop = body.scrollHeight; }
 
       const COMMANDS = {
         help() {
           blank();
-          print('Available commands:', 'output');
-          print('  help    — show this list',       'output');
-          print('  about   — who is Rasim?',        'output');
-          print('  skills  — tech stack overview',  'output');
-          print('  clear   — clear the terminal',   'output');
-          print('  sudo    — nice try ;)',           'output');
+          print('Available commands:',                'output');
+          print('  help    -- show this list',        'output');
+          print('  about   -- who is Rasim?',         'output');
+          print('  skills  -- tech stack overview',   'output');
+          print('  clear   -- clear the terminal',    'output');
+          print('  sudo    -- nice try ;)',            'output');
           blank();
         },
         clear() { body.innerHTML = ''; },
         about() {
           blank();
-          print('┌─────────────────────────────────────────┐', 'output');
-          print('│           RASIM HUSEYNOV                │', 'output');
-          print('│         CS Student & Builder            │', 'output');
-          print('├─────────────────────────────────────────┤', 'output');
-          print('│ Location  : Baku, Azerbaijan            │', 'output');
-          print('│ Target    : Baku Engineering University │', 'output');
-          print('│ Degree    : BSc Computer Science        │', 'output');
-          print('│ Next stop : Estonia (graduate studies)  │', 'output');
-          print('│ Goal      : Global tech career          │', 'output');
-          print('│ Mission   : Build impactful software    │', 'output');
-          print('├─────────────────────────────────────────┤', 'output');
-          print('│ GitHub  : github.com/rasimhuseynov      │', 'output');
-          print('│ LinkedIn: /in/rasim-huseynov-89469b40a  │', 'output');
-          print('└─────────────────────────────────────────┘', 'output');
+          print('+-----------------------------------------+', 'output');
+          print('|           RASIM HUSEYNOV                |', 'output');
+          print('|   Automation Engineering Student        |', 'output');
+          print('+-----------------------------------------+', 'output');
+          print('| Location  : Baku, Azerbaijan            |', 'output');
+          print('| University: Baku Engineering University |', 'output');
+          print('| Degree    : BSc Process Automation Eng. |', 'output');
+          print('| Language  : English-taught programme    |', 'output');
+          print('| Next stop : Estonia (graduate studies)  |', 'output');
+          print('| Goal      : Global tech career          |', 'output');
+          print('| Mission   : Build impactful systems     |', 'output');
+          print('+-----------------------------------------+', 'output');
+          print('| GitHub  : github.com/rasimhuseynov      |', 'output');
+          print('| LinkedIn: /in/rasim-huseynov-89469b40a  |', 'output');
+          print('+-----------------------------------------+', 'output');
           blank();
         },
         skills() {
           blank();
-          print('── TECH STACK ─────────────────────────────', 'output');
-          print('',                                            'output');
-          print('  Languages      Python · JavaScript · SQL', 'output');
-          print('  Web            HTML5 · CSS3 · Web Dev',    'output');
-          print('  CS Core        Algorithms · Data Structures','output');
-          print('  Tooling        Git · GitHub · Linux CLI',  'output');
-          print('  Interests      Systems · AI · Open Source','output');
-          print('',                                            'output');
-          print('── LEARNING ───────────────────────────────', 'output');
-          print('  Currently deepening: problem solving &',   'output');
-          print('  software engineering fundamentals.',       'output');
+          print('-- TECH STACK ----------------------------', 'output');
+          print('',                                          'output');
+          print('  Languages      Python . JavaScript . SQL','output');
+          print('  Web            HTML5 . CSS3 . Web Dev',  'output');
+          print('  CS Core        Algorithms . Data Structures','output');
+          print('  Engineering    Control Theory . Automation','output');
+          print('  Tooling        Git . GitHub . Linux CLI','output');
+          print('  Interests      Systems . AI . Open Source','output');
+          print('',                                          'output');
+          print('-- CURRENTLY LEARNING --------------------', 'output');
+          print('  Process automation fundamentals &',      'output');
+          print('  software engineering principles.',       'output');
           blank();
         },
         sudo() {
           blank();
           print('[SUDO] Authenticating...', 'easter');
           setTimeout(() => {
-            print('[SUDO] Scanning retinal biometrics... ▓▓▓░░░░', 'easter');
+            print('[SUDO] Scanning retinal biometrics... ###....', 'easter');
             setTimeout(() => {
-              print('[SUDO] ACCESS DENIED ✗', 'error');
+              print('[SUDO] ACCESS DENIED', 'error');
               print("You are not authorized to hack Rasim's mainframe.", 'easter');
-              print('This incident has been logged. 👁️', 'easter');
+              print('This incident has been logged.', 'easter');
               blank();
               scrollBottom();
             }, 800);
@@ -1626,7 +1495,7 @@
         }
       };
 
-      input.addEventListener('keydown', function(e) {
+      input.addEventListener('keydown', function (e) {
         if (e.key !== 'Enter') return;
         const raw = input.value.trim();
         input.value = '';
@@ -1644,7 +1513,7 @@
           COMMANDS[cmd]();
         } else {
           blank();
-          print('Command not found: ' + raw + '. Type "help" for a list of commands.', 'error');
+          print('Command not found: ' + raw + '. Type "help" for available commands.', 'error');
           blank();
         }
         scrollBottom();
@@ -1656,3 +1525,4 @@
 
 </body>
 </html>
+```
